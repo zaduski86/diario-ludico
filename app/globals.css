@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --preto: #06040f;
+  --roxo: #0d0820;
+  --dourado: #c8a030;
+  --dourado-claro: #f0c84a;
+  --branco: #f0ecff;
+  --branco-suave: #c8c0e0;
+  --cinza: #6a5898;
+  --background: var(--preto);
+  --foreground: var(--branco);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-dourado: var(--dourado);
+  --color-dourado-claro: var(--dourado-claro);
+  --color-cinza: var(--cinza);
+  --font-serif-display: var(--font-cormorant);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--preto);
+  color: var(--branco);
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+::selection {
+  background: rgba(200, 160, 48, 0.35);
+  color: var(--dourado-claro);
+}
+
+.tracked {
+  letter-spacing: 0.2em;
+}
+
+.tinta {
+  filter: url(#tinta-turbulencia);
+}
+
+canvas {
+  touch-action: none;
+}
