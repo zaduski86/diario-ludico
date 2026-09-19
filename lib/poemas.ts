@@ -222,7 +222,7 @@ export const poemas: Poema[] = [
       ],
       [
         "Uma sombra com identidade não é mais sombra. É outra coisa. E essa outra coisa, ninguém quer conhecer.",
-        "Por isso eu a mantenho sem nome.",
+        "Pois se você a conhecer, terá empatia — e se tiver empatia, ela já ganhou. Por isso eu a mantenho sem nome, sem forma, sem brilho e sem vida.",
         "Por isso eu a mato antes do amanhecer, todos os dias, sem olhar nos olhos que ela não tem — ainda.",
       ],
       [
