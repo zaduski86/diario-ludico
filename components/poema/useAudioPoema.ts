@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { Howl, Howler } from "howler";
 import type { Poema } from "@/lib/poemas";
 
-const TRILHA_VOLUME_BASE = 0.4;
-const TRILHA_VOLUME_DUCK = 0.12;
+const TRILHA_VOLUME_BASE = 0.48;
+const TRILHA_VOLUME_DUCK = 0.24;
+const NARRACAO_VOLUME = 0.85;
 
 let compressorInstalado = false;
 
@@ -44,7 +45,7 @@ export function useAudioPoema(poema: Poema) {
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
   useEffect(() => {
-    const narr = new Howl({ src: [poema.narracao] });
+    const narr = new Howl({ src: [poema.narracao], volume: NARRACAO_VOLUME });
     const trilha = new Howl({ src: [poema.trilha], loop: true, volume: 0 });
     narrRef.current = narr;
     trilhaRef.current = trilha;
