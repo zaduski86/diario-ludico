@@ -7,8 +7,22 @@ export type Poema = {
   preview: string[];
   /** Índice da cena 3D de fundo: 0 aurora/brasas, 1 outono/água/fios, 2 cósmico/lua/poeira. */
   cena: number;
+  /** "prosa" usa uma medida de linha mais estreita, melhor para parágrafos longos. */
+  estilo?: "verso" | "prosa";
+  /** Matiz sutil sobreposta à cena 3D (hex), para diferenciar poemas que reaproveitam a mesma cena. */
+  corAmbiente?: string;
   estrofes: string[][];
 };
+
+/** ~200 palavras/minuto, ritmo de leitura confortável em português. */
+export function tempoLeituraMin(poema: Poema): number {
+  const palavras = poema.estrofes
+    .flat()
+    .join(" ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(palavras / 200));
+}
 
 export const poemas: Poema[] = [
   {
@@ -135,6 +149,8 @@ export const poemas: Poema[] = [
       'quando ninguém está "olhando" pra ele.',
     ],
     cena: 2,
+    estilo: "prosa",
+    corAmbiente: "#f0c84a",
     estrofes: [
       [
         'Existe um "lugar" que só é possível ser "visto" quando ninguém está "olhando" pra ele.',
@@ -177,6 +193,8 @@ export const poemas: Poema[] = [
       "Rasteja pelos cantinhos que ninguém nota.",
     ],
     cena: 0,
+    estilo: "prosa",
+    corAmbiente: "#6878b8",
     estrofes: [
       [
         "Ela habita em todos.",

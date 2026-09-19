@@ -1,30 +1,88 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import type { Poema } from "@/lib/poemas";
+import { poemas, type Poema } from "@/lib/poemas";
 import { registrarVisita } from "@/lib/supabase";
 import SceneCanvas from "./SceneCanvas";
 import StanzaSection from "./StanzaSection";
 import EndSection from "./EndSection";
+import ProgressDots from "./ProgressDots";
+import FontSizeToggle from "./FontSizeToggle";
+import ResumoLeitura from "./ResumoLeitura";
+import QuoteCard from "./QuoteCard";
+import { useFontScale } from "./useFontScale";
+
+const CHAVE_PROGRESSO = (slug: string) => `diario-ludico:progresso:${slug}`;
 
 export default function PoemaExperience({ poema }: { poema: Poema }) {
   const router = useRouter();
   const [progresso, setProgresso] = useState(0);
+  const [estrofeAtual, setEstrofeAtual] = useState(0);
+  const [versoCompartilhar, setVersoCompartilhar] = useState<string | null>(
+    null,
+  );
+  const [mostrarResumo, setMostrarResumo] = useState(false);
+  const [escala, setEscala] = useFontScale();
   const tickAgendado = useRef(false);
+  const ultimoSalvo = useRef(0);
+  const resumoDecidido = useRef(false);
+
+  const indiceAtual = poemas.findIndex((p) => p.slug === poema.slug);
+  const proximo = poemas[indiceAtual + 1];
 
   useEffect(() => {
     registrarVisita(poema.slug);
   }, [poema.slug]);
 
+  // Oferece retomar a leitura de onde parou, se houver progresso salvo.
   useEffect(() => {
+    resumoDecidido.current = false;
+    try {
+      const salvo = Number(
+        window.localStorage.getItem(CHAVE_PROGRESSO(poema.slug)) ?? "0",
+      );
+      if (salvo > 0.05 && salvo < 0.95) setMostrarResumo(true);
+    } catch {
+      // Sem localStorage — segue sem oferecer retomada.
+    }
+  }, [poema.slug]);
+
+  useEffect(() => {
+    const primeiraChamada = { valor: true };
+
     function medir() {
       const total = document.documentElement.scrollHeight - window.innerHeight;
       const p = total > 0 ? window.scrollY / total : 0;
-      setProgresso(Math.min(1, Math.max(0, p)));
+      const clamped = Math.min(1, Math.max(0, p));
+      setProgresso(clamped);
       tickAgendado.current = false;
+
+      // A primeira medição acontece no mount, antes do leitor decidir se
+      // quer retomar a leitura salva — não pode sobrescrever esse valor.
+      if (primeiraChamada.valor) {
+        primeiraChamada.valor = false;
+        return;
+      }
+
+      const agora = Date.now();
+      if (agora - ultimoSalvo.current > 400) {
+        ultimoSalvo.current = agora;
+        try {
+          if (clamped > 0.97) {
+            window.localStorage.removeItem(CHAVE_PROGRESSO(poema.slug));
+          } else {
+            window.localStorage.setItem(
+              CHAVE_PROGRESSO(poema.slug),
+              String(clamped),
+            );
+          }
+        } catch {
+          // Preferência de retomada não será salva.
+        }
+      }
     }
     function aoRolar() {
       if (tickAgendado.current) return;
@@ -38,7 +96,51 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
       window.removeEventListener("scroll", aoRolar);
       window.removeEventListener("resize", aoRolar);
     };
-  }, []);
+  }, [poema.slug]);
+
+  // Marca qual estrofe está mais próxima do centro da tela (para os pontos de navegação).
+  useEffect(() => {
+    const secoes = poema.estrofes.map((_, i) =>
+      document.getElementById(`estrofe-${i}`),
+    );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const i = secoes.findIndex((el) => el === entry.target);
+            if (i >= 0) setEstrofeAtual(i);
+          }
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+    );
+    secoes.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [poema.estrofes, poema.slug]);
+
+  function continuarLeitura() {
+    setMostrarResumo(false);
+    resumoDecidido.current = true;
+    try {
+      const salvo = Number(
+        window.localStorage.getItem(CHAVE_PROGRESSO(poema.slug)) ?? "0",
+      );
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo({ top: salvo * total, behavior: "smooth" });
+    } catch {
+      // Sem localStorage — nada a retomar.
+    }
+  }
+
+  function comecarDoInicio() {
+    setMostrarResumo(false);
+    resumoDecidido.current = true;
+    try {
+      window.localStorage.removeItem(CHAVE_PROGRESSO(poema.slug));
+    } catch {
+      // Nada a limpar.
+    }
+  }
 
   return (
     <motion.div
@@ -70,6 +172,18 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
       {/* Camada 1: cena 3D ambiente */}
       <SceneCanvas cena={poema.cena} progress={progresso} />
 
+      {/* Matiz sutil para diferenciar poemas que reaproveitam a mesma cena */}
+      {poema.corAmbiente && (
+        <div
+          className="pointer-events-none fixed inset-0 z-[4]"
+          style={{
+            backgroundColor: poema.corAmbiente,
+            opacity: 0.1,
+            mixBlendMode: "overlay",
+          }}
+        />
+      )}
+
       {/* Cabeçalho */}
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-10 bg-gradient-to-b from-[rgba(6,4,15,0.9)] via-[rgba(6,4,15,0.6)] to-transparent px-5 pb-5 pt-[60px] text-center">
         <h1 className="text-[clamp(16px,3.5vw,28px)] tracking-[2px] text-[#f0ecff]">
@@ -97,17 +211,46 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
         />
       </div>
 
+      <FontSizeToggle escala={escala} onChange={setEscala} />
+      <ProgressDots total={poema.estrofes.length} atual={estrofeAtual} />
+
+      <AnimatePresence>
+        {mostrarResumo && (
+          <ResumoLeitura
+            onContinuar={continuarLeitura}
+            onComecarDoInicio={comecarDoInicio}
+          />
+        )}
+      </AnimatePresence>
+
+      {versoCompartilhar && (
+        <QuoteCard
+          verso={versoCompartilhar}
+          titulo={poema.titulo}
+          imagem={poema.imagem}
+          onClose={() => setVersoCompartilhar(null)}
+        />
+      )}
+
       {/* Conteúdo — estrofes reveladas ao rolar a página */}
       <main className="relative z-[5]">
         <div className="h-[20vh]" />
         {poema.estrofes.map((versos, i) => (
           <StanzaSection
             key={i}
+            id={`estrofe-${i}`}
             versos={versos}
             ultima={i === poema.estrofes.length - 1}
+            estilo={poema.estilo}
+            escala={escala}
+            onVersoClick={setVersoCompartilhar}
           />
         ))}
-        <EndSection />
+        <EndSection
+          proximoPoema={
+            proximo ? { slug: proximo.slug, titulo: proximo.titulo } : undefined
+          }
+        />
       </main>
     </motion.div>
   );

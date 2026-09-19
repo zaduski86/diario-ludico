@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import Image from "next/image";
-import type { Poema } from "@/lib/poemas";
+import { tempoLeituraMin, type Poema } from "@/lib/poemas";
 
 export default function HubCard({
   poema,
@@ -92,8 +92,12 @@ export default function HubCard({
         </div>
       </div>
       <div className="px-5 py-4">
-        <div className="mb-1.5 text-[10px] tracking-[3px] text-[#c8a030] opacity-70">
-          {poema.numero}
+        <div className="mb-1.5 flex items-center gap-2 text-[10px] tracking-[3px] text-[#c8a030] opacity-70">
+          <span>{poema.numero}</span>
+          <span className="opacity-60">·</span>
+          <span className="tracking-[1px]">
+            ~{tempoLeituraMin(poema)} min de leitura
+          </span>
         </div>
         <div className="mb-1 text-sm leading-snug text-[#f0ecff]">
           {poema.titulo}
