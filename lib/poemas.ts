@@ -6,6 +6,8 @@ export type Poema = {
   imagem: string;
   narracao: string;
   trilha: string;
+  /** Crédito exigido pela licença da trilha (ex.: faixas Creative Commons). */
+  creditoTrilha?: string;
   preview: string[];
   /** Índice da cena 3D de fundo: 0 aurora/brasas, 1 outono/água/fios, 2 cósmico/lua/poeira. */
   cena: number;
@@ -179,11 +181,13 @@ export const poemas: Poema[] = [
   {
     slug: "a-guerra-da-sombra-sem-nome",
     numero: "V",
-    titulo: "A Guerra da Sombra Sem Nome",
+    titulo: "The War Within the Nameless Shadow",
     sub: "",
     imagem: "/assets/images/sombra.webp",
     narracao: "/assets/audio/audio_5.mp3",
     trilha: "/assets/audio/trilha_5.mp3",
+    creditoTrilha:
+      '"Final Battle of the Dark Wizards" — Kevin MacLeod (incompetech.com), licenciada sob Creative Commons: By Attribution 4.0',
     preview: [
       "Ela habita em todos.",
       "Rasteja pelos cantinhos que ninguém nota.",

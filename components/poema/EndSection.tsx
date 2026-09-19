@@ -3,7 +3,11 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-export default function EndSection() {
+export default function EndSection({
+  creditoTrilha,
+}: {
+  creditoTrilha?: string;
+}) {
   const router = useRouter();
 
   return (
@@ -34,6 +38,17 @@ export default function EndSection() {
       >
         ← Voltar ao início
       </motion.button>
+      {creditoTrilha && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+          className="max-w-md text-[9px] italic leading-relaxed text-[#4a3f70]"
+        >
+          {creditoTrilha}
+        </motion.p>
+      )}
     </section>
   );
 }

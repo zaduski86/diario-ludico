@@ -126,7 +126,7 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
             ultima={i === poema.estrofes.length - 1}
           />
         ))}
-        <EndSection />
+        <EndSection creditoTrilha={poema.creditoTrilha} />
       </main>
     </motion.div>
   );
