@@ -14,7 +14,6 @@
     "@react-three/postprocessing": "^3.1.1",
     "@supabase/supabase-js": "^2.116.0",
     "framer-motion": "^13.4.0",
-    "howler": "^2.2.4",
     "next": "16.3.5",
     "postprocessing": "^6.39.5",
     "react": "19.2.8",
@@ -23,7 +22,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/howler": "^2.2.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

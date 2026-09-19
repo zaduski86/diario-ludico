@@ -4,10 +4,6 @@ export type Poema = {
   titulo: string;
   sub: string;
   imagem: string;
-  narracao: string;
-  trilha: string;
-  /** Crédito exigido pela licença da trilha (ex.: faixas Creative Commons). */
-  creditoTrilha?: string;
   preview: string[];
   /** Índice da cena 3D de fundo: 0 aurora/brasas, 1 outono/água/fios, 2 cósmico/lua/poeira. */
   cena: number;
@@ -21,8 +17,6 @@ export const poemas: Poema[] = [
     titulo: "Do Fim ao Começo",
     sub: "",
     imagem: "/assets/images/poema1.jpg",
-    narracao: "/assets/audio/audio_1.mp3",
-    trilha: "/assets/audio/trilha_1.mp3",
     preview: [
       "O dia que perdeu o que nunca teve,",
       "brotou a abundância do que sempre habitou.",
@@ -53,8 +47,6 @@ export const poemas: Poema[] = [
     titulo: "Mono no aware",
     sub: "A melancolia suave das coisas passageiras",
     imagem: "/assets/images/poema2.jpg",
-    narracao: "/assets/audio/audio_2.mp3",
-    trilha: "/assets/audio/trilha_2.mp3",
     preview: [
       "Não é saudade, não é melancolia,",
       "é a antecipação de um momento que não existe.",
@@ -104,8 +96,6 @@ export const poemas: Poema[] = [
     titulo: "Cartografia do Onde Não Fui",
     sub: "",
     imagem: "/assets/images/poema3.png",
-    narracao: "/assets/audio/audio_3.mp3",
-    trilha: "/assets/audio/trilha_3.mp3",
     preview: [
       "E foi ali, naquele mesmo lugar",
       "que eu não me lembro onde era.",
@@ -140,8 +130,6 @@ export const poemas: Poema[] = [
     titulo: 'O "Lugar" sem Coordenadas',
     sub: "",
     imagem: "/assets/images/lugar.webp",
-    narracao: "/assets/audio/audio_4.mp3",
-    trilha: "/assets/audio/trilha_4.mp3",
     preview: [
       'Existe um "lugar" que só é possível ser "visto"',
       'quando ninguém está "olhando" pra ele.',
@@ -184,10 +172,6 @@ export const poemas: Poema[] = [
     titulo: "The War Within the Nameless Shadow",
     sub: "",
     imagem: "/assets/images/sombra.webp",
-    narracao: "/assets/audio/audio_5.mp3",
-    trilha: "/assets/audio/trilha_5.mp3",
-    creditoTrilha:
-      '"Final Battle of the Dark Wizards" — Kevin MacLeod (incompetech.com), licenciada sob Creative Commons: By Attribution 4.0',
     preview: [
       "Ela habita em todos.",
       "Rasteja pelos cantinhos que ninguém nota.",

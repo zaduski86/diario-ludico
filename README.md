@@ -1,17 +1,16 @@
 # Diário Lúdico da Realidade Paralela
 
 Livro de poesia digital e interativo, construído com Next.js 14 (App Router),
-TypeScript, Tailwind CSS, Three.js (via `@react-three/fiber`), Framer Motion e
-Howler.js.
+TypeScript, Tailwind CSS, Three.js (via `@react-three/fiber`) e Framer Motion.
 
 ## Estrutura
 
 - `app/page.tsx` — capa, com preloader e partículas douradas orbitando o retrato do autor
-- `app/hub/page.tsx` — grade com os três poemas (cards com física de repulsão ao mouse)
+- `app/hub/page.tsx` — grade com os poemas (cards com física de repulsão ao mouse)
 - `app/poema/[slug]/page.tsx` — experiência de cada poema
-- `components/poema/scenes/Scene1.tsx` / `Scene2.tsx` / `Scene3.tsx` — cenas 3D exclusivas de cada poema
-- `components/poema/PoemaExperience.tsx` — orquestra cena 3D, imagem em marca d'água, estrofes, objetos interativos, áudio e tela final
-- `lib/poemas.ts` — conteúdo dos três poemas (títulos, estrofes, objetos interativos)
+- `components/poema/scenes/Scene1.tsx` / `Scene2.tsx` / `Scene3.tsx` — cenas 3D de fundo (aurora/brasas, outono/água/fios, cósmico/lua/poeira), reaproveitadas entre poemas via o campo `cena` de cada um
+- `components/poema/PoemaExperience.tsx` — orquestra cena 3D, imagem em marca d'água e estrofes reveladas ao rolar a página (modo scroll)
+- `lib/poemas.ts` — conteúdo de todos os poemas (títulos, estrofes, cena de fundo)
 - `lib/supabase.ts` — cliente Supabase opcional para registrar visitas e comentários
 
 ## Rodando localmente
@@ -41,11 +40,16 @@ tabelas `visitas` e `comentarios` antes de configurar as variáveis acima.
 
 ## Deploy
 
-O projeto está pronto para deploy na Vercel (basta conectar o repositório
-GitHub `Bella Inversion/Diario ludico` e configurar as duas variáveis de
-ambiente acima no painel do projeto).
+O projeto está publicado na Vercel, conectado ao repositório GitHub
+`zaduski86/diario-ludico` — cada push em `main` dispara um novo deploy.
+
+## Adicionando um novo poema
+
+Edite `lib/poemas.ts`: adicione uma entrada ao array `poemas` com `slug`,
+`numero`, `titulo`, `imagem` (arquivo em `public/assets/images/`), `preview`,
+`cena` (0, 1 ou 2 — escolha a que combinar com o tema) e `estrofes` (array de
+estrofes, cada uma um array de versos).
 
 ## Assets
 
-Os arquivos de áudio e imagem ficam em `public/assets/` (`audio/` e
-`images/`), extraídos do protótipo original em HTML.
+As imagens ficam em `public/assets/images/`.

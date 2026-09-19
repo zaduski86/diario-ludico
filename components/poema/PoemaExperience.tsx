@@ -9,21 +9,11 @@ import { registrarVisita } from "@/lib/supabase";
 import SceneCanvas from "./SceneCanvas";
 import StanzaSection from "./StanzaSection";
 import EndSection from "./EndSection";
-import AudioPlayer from "./AudioPlayer";
-import { useAudioPoema } from "./useAudioPoema";
 
 export default function PoemaExperience({ poema }: { poema: Poema }) {
   const router = useRouter();
   const [progresso, setProgresso] = useState(0);
   const tickAgendado = useRef(false);
-
-  const {
-    narrTocando,
-    trilhaTocando,
-    toggleNarracao,
-    toggleTrilha,
-    analyser,
-  } = useAudioPoema(poema);
 
   useEffect(() => {
     registrarVisita(poema.slug);
@@ -107,15 +97,6 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
         />
       </div>
 
-      <AudioPlayer
-        titulo={poema.titulo}
-        narrTocando={narrTocando}
-        trilhaTocando={trilhaTocando}
-        onToggleNarracao={toggleNarracao}
-        onToggleTrilha={toggleTrilha}
-        analyser={analyser}
-      />
-
       {/* Conteúdo — estrofes reveladas ao rolar a página */}
       <main className="relative z-[5]">
         <div className="h-[20vh]" />
@@ -126,7 +107,7 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
             ultima={i === poema.estrofes.length - 1}
           />
         ))}
-        <EndSection creditoTrilha={poema.creditoTrilha} />
+        <EndSection />
       </main>
     </motion.div>
   );
