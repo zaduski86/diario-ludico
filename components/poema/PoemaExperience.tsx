@@ -12,13 +12,7 @@ import EndSection from "./EndSection";
 import AudioPlayer from "./AudioPlayer";
 import { useAudioPoema } from "./useAudioPoema";
 
-export default function PoemaExperience({
-  poema,
-  poemaIndex,
-}: {
-  poema: Poema;
-  poemaIndex: number;
-}) {
+export default function PoemaExperience({ poema }: { poema: Poema }) {
   const router = useRouter();
   const [progresso, setProgresso] = useState(0);
   const tickAgendado = useRef(false);
@@ -84,7 +78,7 @@ export default function PoemaExperience({
       </div>
 
       {/* Camada 1: cena 3D ambiente */}
-      <SceneCanvas poemaIndex={poemaIndex} progress={progresso} />
+      <SceneCanvas cena={poema.cena} progress={progresso} />
 
       {/* Cabeçalho */}
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-10 bg-gradient-to-b from-[rgba(6,4,15,0.9)] via-[rgba(6,4,15,0.6)] to-transparent px-5 pb-5 pt-[60px] text-center">

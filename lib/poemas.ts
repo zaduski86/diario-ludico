@@ -1,10 +1,3 @@
-export type ObjetoInterativo = {
-  simbolo: string;
-  x: number; // % da tela
-  y: number; // % da tela
-  label: string;
-};
-
 export type Poema = {
   slug: string;
   numero: string;
@@ -14,7 +7,8 @@ export type Poema = {
   narracao: string;
   trilha: string;
   preview: string[];
-  objetos: ObjetoInterativo[];
+  /** Índice da cena 3D de fundo: 0 aurora/brasas, 1 outono/água/fios, 2 cósmico/lua/poeira. */
+  cena: number;
   estrofes: string[][];
 };
 
@@ -31,12 +25,7 @@ export const poemas: Poema[] = [
       "O dia que perdeu o que nunca teve,",
       "brotou a abundância do que sempre habitou.",
     ],
-    objetos: [
-      { simbolo: "⛓", x: 15, y: 60, label: "corrente" },
-      { simbolo: "🕊", x: 75, y: 25, label: "asa" },
-      { simbolo: "☀", x: 82, y: 68, label: "aurora" },
-      { simbolo: "✦", x: 22, y: 30, label: "sonho" },
-    ],
+    cena: 0,
     estrofes: [
       [
         "O dia que perdeu o que nunca teve,",
@@ -68,14 +57,7 @@ export const poemas: Poema[] = [
       "Não é saudade, não é melancolia,",
       "é a antecipação de um momento que não existe.",
     ],
-    objetos: [
-      { simbolo: "🍂", x: 18, y: 35, label: "folha" },
-      { simbolo: "∞", x: 78, y: 20, label: "fio" },
-      { simbolo: "◎", x: 65, y: 72, label: "água" },
-      { simbolo: "◦", x: 30, y: 75, label: "gota" },
-      { simbolo: "✦", x: 85, y: 50, label: "essência" },
-      { simbolo: "〰", x: 45, y: 20, label: "onda" },
-    ],
+    cena: 1,
     estrofes: [
       [
         "Não é saudade, não é melancolia,",
@@ -126,12 +108,7 @@ export const poemas: Poema[] = [
       "E foi ali, naquele mesmo lugar",
       "que eu não me lembro onde era.",
     ],
-    objetos: [
-      { simbolo: "🕯", x: 20, y: 65, label: "vela" },
-      { simbolo: "🪶", x: 70, y: 30, label: "pena" },
-      { simbolo: "◉", x: 78, y: 70, label: "pedra" },
-      { simbolo: "☽", x: 25, y: 25, label: "lua" },
-    ],
+    cena: 2,
     estrofes: [
       [
         "E foi ali, naquele mesmo lugar que eu não me lembro onde era,",
@@ -152,6 +129,112 @@ export const poemas: Poema[] = [
         "e a aurora que outrora outorga hora",
         "ontem nem existiu",
         "num futuro que com certeza aconteceu faz tempo.",
+      ],
+    ],
+  },
+  {
+    slug: "o-lugar-sem-coordenadas",
+    numero: "IV",
+    titulo: 'O "Lugar" sem Coordenadas',
+    sub: "",
+    imagem: "/assets/images/lugar.webp",
+    narracao: "/assets/audio/audio_4.mp3",
+    trilha: "/assets/audio/trilha_4.mp3",
+    preview: [
+      'Existe um "lugar" que só é possível ser "visto"',
+      'quando ninguém está "olhando" pra ele.',
+    ],
+    cena: 2,
+    estrofes: [
+      [
+        'Existe um "lugar" que só é possível ser "visto" quando ninguém está "olhando" pra ele.',
+        'É preciso fechar os olhos pra conseguir "ver" os primeiros traços dourados e simétricos, rasgando a escuridão e iluminando uma silhueta desconhecida.',
+      ],
+      [
+        "A forma é vaga, mas a magnitude é certa.",
+        'Para estar nesse "lugar", até o tempo — que nunca pede licença pra passar — ali para. Contempla, pede, e aí passa, devagar, quase imóvel, seguindo seu caminho.',
+      ],
+      [
+        "Neste instante, o silêncio fala. E pela primeira vez, é a única voz que importa.",
+        "Fazia tempo que você não ouvia aquela voz.",
+      ],
+      [
+        "Bate uma saudade — uma nostalgia que mais parece um déjà não vi. Uma certeza estranha de reconhecer o que nunca foi encontrado.",
+        'A "fala" do silêncio vira grito. O som ecoa e vibra, cada vez mais forte, até quase cegar e ensurdecer.',
+      ],
+      [
+        "À beira do inconsciente, você percebe que não foi você que encontrou esse lugar — foi ele que esperou até você estar pronto para ali perder-se.",
+        "Então, você se entrega. O silêncio volta às suas origens — e emudece.",
+      ],
+      [
+        "Nesse vazio que não é vazio, pela primeira vez, algo respira.",
+        "E quando respira, você nota que seu peito estufa.",
+      ],
+      [
+        'O "lugar" — a silhueta de poder intangível onde o tempo para, o silêncio grita, e onde os olhos fechados enxergam com a alma — em realidade, é você.',
+        "E tudo que parecia perdido era só você, esperando que você mesmo chegasse — e através de um abraço......., se reconectasse !!!",
+      ],
+    ],
+  },
+  {
+    slug: "a-guerra-da-sombra-sem-nome",
+    numero: "V",
+    titulo: "A Guerra da Sombra Sem Nome",
+    sub: "",
+    imagem: "/assets/images/sombra.webp",
+    narracao: "/assets/audio/audio_5.mp3",
+    trilha: "/assets/audio/trilha_5.mp3",
+    preview: [
+      "Ela habita em todos.",
+      "Rasteja pelos cantinhos que ninguém nota.",
+    ],
+    cena: 0,
+    estrofes: [
+      [
+        "Ela habita em todos.",
+        "Rasteja pelos cantinhos que ninguém nota. Pelos silêncios entre uma palavra e outra. Pelos segundos antes de você decidir quem vai ser hoje.",
+        "Eu a mato todos os dias.",
+      ],
+      [
+        "Não de uma vez — nunca de uma vez. É centímetro por centímetro, trincheira por trincheira, num lamaçal que não seca e num front que não tem mapa.",
+        "O preparo é árduo. A batalha, constante. E o campo — sempre o mesmo: dentro.",
+      ],
+      [
+        "A cada migalha de alimento ela cresce. O que o bem conquista em um ano de treino, ela devora num instante de descuido.",
+        "Às vezes ela não ataca. Ela espera.",
+        "Sabe que a exaustão faz o trabalho por ela.",
+      ],
+      [
+        "Quando duas delas se encontram, não precisam de palavras. Se reconhecem — e num instante formam alcatéia, com um único propósito: apagar o brilho ao redor.",
+        "Não por maldade. Por necessidade.",
+        "A luz as incomoda de um jeito que o escuro nunca vai entender.",
+      ],
+      [
+        "Porque a luz não as combate.",
+        "Ela apenas as revela.",
+        "E revelar seria o fim.",
+      ],
+      [
+        "Porque no dia em que ela tiver rosto — a guerra está perdida.",
+        "No dia em que tiver cheiro — perdida.",
+        "Peso. Forma. Nome.",
+        "Perdida.",
+      ],
+      [
+        "Uma sombra com identidade não é mais sombra. É outra coisa. E essa outra coisa, ninguém quer conhecer.",
+        "Por isso eu a mantenho sem nome.",
+        "Por isso eu a mato antes do amanhecer, todos os dias, sem olhar nos olhos que ela não tem — ainda.",
+      ],
+      [
+        "Hoje a luz ganhou.",
+        "Exausto. Destruído. Orgulhoso.",
+        "Parte de mim morreu no processo — como sempre morre. É preciso destruir às vezes para edificar mais forte.",
+      ],
+      [
+        "Ninguém sabe dessa guerra.",
+        "E todo mundo a trava.",
+        "Em silêncio. Ao mesmo tempo. Sem se ver.",
+        "É um jogo de fluxo contínuo — e vence sempre quem é mais alimentado.",
       ],
     ],
   },

@@ -23,15 +23,15 @@ function detectarGpuFraca(gl: WebGLRenderingContext): boolean {
 }
 
 export default function SceneCanvas({
-  poemaIndex,
+  cena,
   progress,
 }: {
-  poemaIndex: number;
+  cena: number;
   progress: number;
 }) {
   const [dprMax, setDprMax] = useState(1.5);
   const [bloomAtivo, setBloomAtivo] = useState(true);
-  const Cena = CENAS[poemaIndex % CENAS.length];
+  const Cena = CENAS[cena % CENAS.length];
 
   return (
     <div className="fixed inset-0 z-[3]">

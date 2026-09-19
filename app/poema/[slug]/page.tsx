@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPoemaBySlug, getPoemaIndex, poemas } from "@/lib/poemas";
+import { getPoemaBySlug, poemas } from "@/lib/poemas";
 import PoemaExperience from "@/components/poema/PoemaExperience";
 
 export function generateStaticParams() {
@@ -34,5 +34,5 @@ export default async function PoemaPage({
   const { slug } = await params;
   const poema = getPoemaBySlug(slug);
   if (!poema) notFound();
-  return <PoemaExperience poema={poema} poemaIndex={getPoemaIndex(slug)} />;
+  return <PoemaExperience poema={poema} />;
 }
