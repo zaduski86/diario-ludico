@@ -3,11 +3,9 @@
 import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import type { Poema } from "@/lib/poemas";
 import Scene1 from "./scenes/Scene1";
 import Scene2 from "./scenes/Scene2";
 import Scene3 from "./scenes/Scene3";
-import InteractiveObject3D from "./InteractiveObject3D";
 
 const CENAS = [Scene1, Scene2, Scene3];
 
@@ -26,21 +24,14 @@ function detectarGpuFraca(gl: WebGLRenderingContext): boolean {
 
 export default function SceneCanvas({
   poemaIndex,
-  poema,
-  estrofeAtual,
-  onObjetoAtivado,
+  progress,
 }: {
   poemaIndex: number;
-  poema: Poema;
-  estrofeAtual: number;
-  onObjetoAtivado: (index: number, screenPos: { x: number; y: number }) => void;
+  progress: number;
 }) {
   const [dprMax, setDprMax] = useState(1.5);
   const [bloomAtivo, setBloomAtivo] = useState(true);
   const Cena = CENAS[poemaIndex % CENAS.length];
-  const progress = Math.min(1, (estrofeAtual + 1) / poema.estrofes.length);
-  const proximoObjeto =
-    estrofeAtual + 1 < poema.estrofes.length ? estrofeAtual + 1 : -1;
 
   return (
     <div className="fixed inset-0 z-[3]">
@@ -57,14 +48,6 @@ export default function SceneCanvas({
       >
         <Suspense fallback={null}>
           <Cena progress={progress} />
-          {poema.objetos.map((obj, i) => (
-            <InteractiveObject3D
-              key={i}
-              objeto={obj}
-              visible={i === proximoObjeto}
-              onActivate={(pos) => onObjetoAtivado(i, pos)}
-            />
-          ))}
           {bloomAtivo && (
             <EffectComposer multisampling={0}>
               <Bloom

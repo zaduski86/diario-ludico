@@ -135,7 +135,7 @@ export const poemas: Poema[] = [
     estrofes: [
       [
         "E foi ali, naquele mesmo lugar que eu não me lembro onde era,",
-        "que eu tenha certeza nem ter visto ele convidar o Sol pra entrar numa noite singela.",
+        "que eu não tenha certeza nem ter visto ele convidar o Sol pra entrar numa noite singela.",
         "Já era mais ou menos meio dia quando a lua apontou na janela —",
         "um calor de bater os dentes, mas eu suava de frio na escuridão da vela.",
       ],

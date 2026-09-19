@@ -7,11 +7,9 @@ import Image from "next/image";
 import type { Poema } from "@/lib/poemas";
 import { registrarVisita } from "@/lib/supabase";
 import SceneCanvas from "./SceneCanvas";
-import EstrofeDisplay from "./EstrofeDisplay";
-import Contador from "./Contador";
+import StanzaSection from "./StanzaSection";
+import EndSection from "./EndSection";
 import AudioPlayer from "./AudioPlayer";
-import FimPoema from "./FimPoema";
-import ParticleBurst, { type Burst } from "./ParticleBurst";
 import { useAudioPoema } from "./useAudioPoema";
 
 export default function PoemaExperience({
@@ -22,10 +20,8 @@ export default function PoemaExperience({
   poemaIndex: number;
 }) {
   const router = useRouter();
-  const [estrofeAtual, setEstrofeAtual] = useState(-1);
-  const [fim, setFim] = useState(false);
-  const [bursts, setBursts] = useState<Burst[]>([]);
-  const burstId = useRef(0);
+  const [progresso, setProgresso] = useState(0);
+  const tickAgendado = useRef(false);
 
   const {
     narrTocando,
@@ -39,28 +35,26 @@ export default function PoemaExperience({
     registrarVisita(poema.slug);
   }, [poema.slug]);
 
-  function handleObjetoAtivado(
-    index: number,
-    screenPos: { x: number; y: number },
-  ) {
-    if (index !== estrofeAtual + 1) return;
-    const id = burstId.current++;
-    setBursts((b) => [...b, { id, ...screenPos }]);
-    setTimeout(
-      () => setBursts((b) => b.filter((x) => x.id !== id)),
-      1000,
-    );
-
-    const proximo = estrofeAtual + 1;
-    setEstrofeAtual(proximo);
-    if (proximo >= poema.estrofes.length - 1) {
-      setTimeout(() => setFim(true), 3200);
+  useEffect(() => {
+    function medir() {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const p = total > 0 ? window.scrollY / total : 0;
+      setProgresso(Math.min(1, Math.max(0, p)));
+      tickAgendado.current = false;
     }
-  }
-
-  const estrofeVisivel =
-    estrofeAtual >= 0 ? poema.estrofes[estrofeAtual] : null;
-  const ultimaEstrofe = poema.estrofes[poema.estrofes.length - 1];
+    function aoRolar() {
+      if (tickAgendado.current) return;
+      tickAgendado.current = true;
+      requestAnimationFrame(medir);
+    }
+    medir();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("resize", aoRolar);
+    return () => {
+      window.removeEventListener("scroll", aoRolar);
+      window.removeEventListener("resize", aoRolar);
+    };
+  }, []);
 
   return (
     <motion.div
@@ -68,7 +62,7 @@ export default function PoemaExperience({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative min-h-dvh w-full overflow-hidden"
+      className="relative min-h-dvh w-full"
     >
       {/* Camada 2: imagem em marca d'água */}
       <div className="fixed inset-0 z-[1]">
@@ -89,13 +83,8 @@ export default function PoemaExperience({
         />
       </div>
 
-      {/* Camada 1: cena 3D */}
-      <SceneCanvas
-        poemaIndex={poemaIndex}
-        poema={poema}
-        estrofeAtual={estrofeAtual}
-        onObjetoAtivado={handleObjetoAtivado}
-      />
+      {/* Camada 1: cena 3D ambiente */}
+      <SceneCanvas poemaIndex={poemaIndex} progress={progresso} />
 
       {/* Cabeçalho */}
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-10 bg-gradient-to-b from-[rgba(6,4,15,0.9)] via-[rgba(6,4,15,0.6)] to-transparent px-5 pb-5 pt-[60px] text-center">
@@ -116,27 +105,13 @@ export default function PoemaExperience({
         ← Diário Lúdico
       </button>
 
-      {/* Área central: estrofe */}
-      <div className="pointer-events-none relative z-[5] flex min-h-dvh items-center justify-center">
-        {fim ? null : estrofeVisivel ? (
-          <EstrofeDisplay
-            versos={estrofeVisivel}
-            estrofeKey={estrofeAtual}
-            ultima={estrofeAtual === poema.estrofes.length - 1}
-          />
-        ) : (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="text-[11px] uppercase tracking-[3px] text-[#6a5898]"
-          >
-            toque no símbolo dourado para começar
-          </motion.p>
-        )}
+      {/* Barra de progresso de leitura */}
+      <div className="fixed left-0 top-0 z-30 h-[2px] w-full bg-transparent">
+        <div
+          className="h-full bg-gradient-to-r from-[#c8a030] to-[#f0c84a] transition-[width] duration-150 ease-out"
+          style={{ width: `${progresso * 100}%` }}
+        />
       </div>
-
-      <Contador total={poema.estrofes.length} atual={estrofeAtual} />
 
       <AudioPlayer
         titulo={poema.titulo}
@@ -147,11 +122,18 @@ export default function PoemaExperience({
         analyser={analyser}
       />
 
-      {bursts.map((b) => (
-        <ParticleBurst key={b.id} burst={b} />
-      ))}
-
-      {fim && <FimPoema versos={ultimaEstrofe} />}
+      {/* Conteúdo — estrofes reveladas ao rolar a página */}
+      <main className="relative z-[5]">
+        <div className="h-[20vh]" />
+        {poema.estrofes.map((versos, i) => (
+          <StanzaSection
+            key={i}
+            versos={versos}
+            ultima={i === poema.estrofes.length - 1}
+          />
+        ))}
+        <EndSection />
+      </main>
     </motion.div>
   );
 }
