@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MeshReflectorMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { texturaFolha, texturaParticulaSuave, texturaPetala } from "./texturas";
 
 const LEAF_COUNT = 70;
 const PETAL_COUNT = 40;
@@ -50,12 +51,12 @@ function FolhasCaindo() {
     <instancedMesh ref={meshRef} args={[undefined, undefined, LEAF_COUNT]}>
       <planeGeometry args={[1, 1]} />
       <meshStandardMaterial
-        color="#c8501f"
+        map={texturaFolha()}
         emissive="#8a3410"
-        emissiveIntensity={0.3}
+        emissiveIntensity={0.25}
         side={THREE.DoubleSide}
         transparent
-        opacity={0.9}
+        alphaTest={0.1}
       />
     </instancedMesh>
   );
@@ -94,8 +95,14 @@ function Petalas() {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, PETAL_COUNT]}>
-      <circleGeometry args={[1, 6]} />
-      <meshBasicMaterial color="#f0b0c0" transparent opacity={0.55} side={THREE.DoubleSide} />
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        map={texturaPetala()}
+        transparent
+        opacity={0.85}
+        alphaTest={0.1}
+        side={THREE.DoubleSide}
+      />
     </instancedMesh>
   );
 }
@@ -182,7 +189,14 @@ function Nevoa() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.5} color="#8878b0" transparent opacity={0.06} depthWrite={false} />
+      <pointsMaterial
+        size={0.55}
+        map={texturaParticulaSuave("120,110,150")}
+        color="#605880"
+        transparent
+        opacity={0.1}
+        depthWrite={false}
+      />
     </points>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import type { Poema } from "@/lib/poemas";
 import Scene1 from "./scenes/Scene1";
 import Scene2 from "./scenes/Scene2";
@@ -35,6 +36,7 @@ export default function SceneCanvas({
   onObjetoAtivado: (index: number, screenPos: { x: number; y: number }) => void;
 }) {
   const [dprMax, setDprMax] = useState(1.5);
+  const [bloomAtivo, setBloomAtivo] = useState(true);
   const Cena = CENAS[poemaIndex % CENAS.length];
   const progress = Math.min(1, (estrofeAtual + 1) / poema.estrofes.length);
   const proximoObjeto =
@@ -47,7 +49,10 @@ export default function SceneCanvas({
         dpr={[1, dprMax]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
-          if (detectarGpuFraca(gl.getContext())) setDprMax(1);
+          if (detectarGpuFraca(gl.getContext())) {
+            setDprMax(1);
+            setBloomAtivo(false);
+          }
         }}
       >
         <Suspense fallback={null}>
@@ -60,6 +65,16 @@ export default function SceneCanvas({
               onActivate={(pos) => onObjetoAtivado(i, pos)}
             />
           ))}
+          {bloomAtivo && (
+            <EffectComposer multisampling={0}>
+              <Bloom
+                intensity={0.5}
+                luminanceThreshold={0.5}
+                luminanceSmoothing={0.25}
+                mipmapBlur
+              />
+            </EffectComposer>
+          )}
         </Suspense>
       </Canvas>
     </div>

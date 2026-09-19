@@ -3,32 +3,16 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import {
+  texturaNuvens,
+  texturaParticulaSuave,
+  texturaPena,
+  texturaRelogio,
+} from "./texturas";
 
 const DUST_COUNT = 200;
 const FEATHER_COUNT = 14;
 const CLOCK_COUNT = 6;
-
-function cloudTexture() {
-  const size = 256;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d")!;
-  ctx.clearRect(0, 0, size, size);
-  for (let i = 0; i < 60; i++) {
-    const x = Math.random() * size;
-    const y = Math.random() * size;
-    const r = 10 + Math.random() * 30;
-    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-    grad.addColorStop(0, "rgba(255,255,255,0.5)");
-    grad.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  return new THREE.CanvasTexture(canvas);
-}
 
 function Poeira() {
   const ref = useRef<THREE.Points>(null);
@@ -64,14 +48,21 @@ function Poeira() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.02} color="#c8c0e0" transparent opacity={0.5} depthWrite={false} />
+      <pointsMaterial
+        size={0.05}
+        map={texturaParticulaSuave("200,192,224")}
+        color="#c8c0e0"
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+      />
     </points>
   );
 }
 
 function Lua() {
   const cloudsRef = useRef<THREE.Mesh>(null);
-  const texture = useMemo(() => (typeof document !== "undefined" ? cloudTexture() : null), []);
+  const texture = useMemo(() => (typeof document !== "undefined" ? texturaNuvens() : null), []);
 
   useFrame((_, delta) => {
     if (cloudsRef.current) cloudsRef.current.rotation.y += delta * 0.05;
@@ -95,20 +86,40 @@ function Lua() {
 }
 
 function RelogioMesh() {
+  const mostrador = useMemo(
+    () => (typeof document !== "undefined" ? texturaRelogio() : null),
+    [],
+  );
   return (
     <group>
+      {mostrador && (
+        <mesh position={[0, 0, -0.01]}>
+          <circleGeometry args={[0.32, 32]} />
+          <meshBasicMaterial map={mostrador} transparent side={THREE.DoubleSide} />
+        </mesh>
+      )}
       <mesh>
-        <torusGeometry args={[0.3, 0.03, 12, 32]} />
-        <meshStandardMaterial color="#c8a030" emissive="#c8a030" emissiveIntensity={0.6} metalness={0.6} roughness={0.3} />
+        <torusGeometry args={[0.3, 0.025, 12, 32]} />
+        <meshStandardMaterial
+          color="#c8a030"
+          emissive="#c8a030"
+          emissiveIntensity={0.6}
+          metalness={0.6}
+          roughness={0.3}
+        />
       </mesh>
-      <mesh rotation={[0, 0, Math.PI / 4]}>
-        <boxGeometry args={[0.02, 0.22, 0.02]} />
-        <meshBasicMaterial color="#f0ecff" />
-      </mesh>
-      <mesh rotation={[0, 0, -Math.PI / 6]}>
-        <boxGeometry args={[0.02, 0.14, 0.02]} />
-        <meshBasicMaterial color="#f0ecff" />
-      </mesh>
+      <group rotation={[0, 0, -Math.PI / 5]}>
+        <mesh position={[0, 0.09, 0.005]}>
+          <boxGeometry args={[0.014, 0.18, 0.008]} />
+          <meshBasicMaterial color="#f0ecff" />
+        </mesh>
+      </group>
+      <group rotation={[0, 0, -Math.PI / 2.4]}>
+        <mesh position={[0, 0.06, 0.005]}>
+          <boxGeometry args={[0.012, 0.12, 0.008]} />
+          <meshBasicMaterial color="#f0ecff" />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -183,8 +194,14 @@ function PenasEspiral() {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, FEATHER_COUNT]}>
-      <planeGeometry args={[1, 0.3]} />
-      <meshBasicMaterial color="#d8d0e8" transparent opacity={0.7} side={THREE.DoubleSide} />
+      <planeGeometry args={[0.4, 1]} />
+      <meshBasicMaterial
+        map={texturaPena()}
+        transparent
+        opacity={0.85}
+        alphaTest={0.1}
+        side={THREE.DoubleSide}
+      />
     </instancedMesh>
   );
 }

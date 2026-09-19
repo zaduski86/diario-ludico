@@ -3,6 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { texturaParticulaSuave } from "./texturas";
 
 const BIRD_COUNT = 9;
 const EMBER_COUNT = 220;
@@ -44,10 +45,11 @@ function Embers() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.035}
+        size={0.09}
+        map={texturaParticulaSuave("240,200,74")}
         color="#f0c84a"
         transparent
-        opacity={0.75}
+        opacity={0.85}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -86,10 +88,11 @@ function Vento() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.02}
+        size={0.06}
+        map={texturaParticulaSuave("200,192,224")}
         color="#c8c0e0"
         transparent
-        opacity={0.35}
+        opacity={0.4}
         sizeAttenuation
         depthWrite={false}
       />
