@@ -65,7 +65,7 @@ export default function FimPoema({ versos }: { versos: string[] }) {
       <div className="relative z-10 mb-6 text-[12px] uppercase tracking-[4px] text-[#6a5898]">
         fim
       </div>
-      <div className="relative z-10 mb-10 max-w-xl text-[clamp(15px,3vw,22px)] italic leading-[1.8] text-[#f0c84a]">
+      <div className="relative z-10 mb-10 max-w-2xl text-[clamp(19px,2.6vw,28px)] italic leading-[1.8] text-[#f0c84a]">
         {versos.map((v, i) => (
           <div key={i}>{v}</div>
         ))}

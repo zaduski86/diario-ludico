@@ -17,19 +17,9 @@ export function useAudioPoema(poema: Poema) {
     narrRef.current = narr;
     trilhaRef.current = trilha;
 
-    narr.once("load", () => {
-      narr.play();
-      setNarrTocando(true);
-    });
     narr.on("end", () => setNarrTocando(false));
     narr.on("pause", () => setNarrTocando(false));
     narr.on("play", () => setNarrTocando(true));
-
-    trilha.once("load", () => {
-      trilha.play();
-      trilha.fade(0, 0.22, 3000);
-      setTrilhaTocando(true);
-    });
 
     try {
       const ctx = Howler.ctx as AudioContext;
@@ -68,6 +58,7 @@ export function useAudioPoema(poema: Poema) {
       setTrilhaTocando(false);
     } else {
       trilha.play();
+      trilha.fade(trilha.volume(), 0.22, 2000);
       setTrilhaTocando(true);
     }
   }

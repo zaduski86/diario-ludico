@@ -12,7 +12,7 @@ export default function EstrofeDisplay({
   ultima: boolean;
 }) {
   return (
-    <div className="relative z-[6] w-[90%] max-w-[620px] px-5 py-10 text-center">
+    <div className="relative z-[6] w-[90%] max-w-[760px] px-5 py-10 text-center">
       <AnimatePresence mode="wait">
         <motion.div
           key={estrofeKey}
@@ -26,8 +26,8 @@ export default function EstrofeDisplay({
                 key={i}
                 className={
                   isFinal
-                    ? "verso-final block text-[clamp(15px,2.8vw,22px)] italic text-[#f0c84a] mt-2"
-                    : "block text-[clamp(13px,2.2vw,18px)] leading-[2] tracking-[0.3px] text-[#f0ecff]"
+                    ? "verso-final block text-[clamp(20px,2.4vw,30px)] italic text-[#f0c84a] mt-3"
+                    : "block text-[clamp(17px,1.8vw,25px)] leading-[1.9] tracking-[0.3px] text-[#f0ecff]"
                 }
                 initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
                 animate={
