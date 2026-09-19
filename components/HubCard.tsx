@@ -69,12 +69,12 @@ export default function HubCard({
       className="group relative cursor-pointer overflow-hidden rounded-sm border border-[rgba(200,160,48,0.12)] bg-[#0d0820] transition-colors duration-300 hover:border-[rgba(200,160,48,0.45)]"
       layoutId={`poema-card-${poema.slug}`}
     >
-      <div className="relative h-[180px] w-full overflow-hidden">
+      <div className="relative h-[220px] w-full overflow-hidden">
         <Image
           src={poema.imagem}
           alt={poema.titulo}
           fill
-          sizes="310px"
+          sizes="380px"
           className="object-cover brightness-[0.85] saturate-[1] transition-all duration-500 group-hover:scale-110 group-hover:brightness-100 group-hover:saturate-110"
         />
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -84,30 +84,30 @@ export default function HubCard({
               className="absolute h-1 w-1 rounded-full bg-[#f0c84a]"
               style={{
                 left: `${(i * 37) % 100}%`,
-                top: i % 2 === 0 ? "-4px" : "184px",
+                top: i % 2 === 0 ? "-4px" : "224px",
                 animation: `flutuarPartícula 1.8s ease-in-out ${i * 0.12}s infinite`,
               }}
             />
           ))}
         </div>
       </div>
-      <div className="px-5 py-4">
-        <div className="mb-1.5 flex items-center gap-2 text-[10px] tracking-[3px] text-[#c8a030] opacity-70">
+      <div className="px-6 py-5">
+        <div className="mb-2 flex items-center gap-2 text-[11px] tracking-[3px] text-[#c8a030] opacity-80">
           <span>{poema.numero}</span>
           <span className="opacity-60">·</span>
           <span className="tracking-[1px]">
             ~{tempoLeituraMin(poema)} min de leitura
           </span>
         </div>
-        <div className="mb-1 text-sm leading-snug text-[#f0ecff]">
+        <div className="mb-1.5 text-lg leading-snug text-[#f0ecff]">
           {poema.titulo}
         </div>
         {poema.sub && (
-          <div className="mb-1.5 text-[10px] italic text-[#6a5898]">
+          <div className="mb-2 text-[12px] italic text-[#6a5898]">
             {poema.sub}
           </div>
         )}
-        <div className="text-[11px] italic leading-[1.7] text-[#c8c0e0] opacity-55">
+        <div className="text-[13px] italic leading-[1.7] text-[#c8c0e0] opacity-70">
           {poema.preview.map((v, i) => (
             <div key={i}>{v}</div>
           ))}

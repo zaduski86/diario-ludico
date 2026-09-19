@@ -37,7 +37,7 @@ export default function Hub() {
         Escolha por onde entrar
       </h2>
 
-      <div className="relative z-10 grid w-full max-w-[1020px] grid-cols-[repeat(auto-fit,minmax(250px,310px))] justify-center gap-6">
+      <div className="relative z-10 grid w-full max-w-[1440px] grid-cols-[repeat(auto-fit,minmax(300px,380px))] justify-center gap-8">
         {poemas.map((p) => (
           <HubCard
             key={p.slug}
