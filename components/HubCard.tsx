@@ -75,7 +75,7 @@ export default function HubCard({
           alt={poema.titulo}
           fill
           sizes="310px"
-          className="object-cover brightness-[0.6] saturate-[0.75] transition-all duration-500 group-hover:scale-110 group-hover:brightness-[0.8] group-hover:saturate-100"
+          className="object-cover brightness-[0.85] saturate-[1] transition-all duration-500 group-hover:scale-110 group-hover:brightness-100 group-hover:saturate-110"
         />
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
           {Array.from({ length: 10 }).map((_, i) => (

@@ -78,9 +78,15 @@ export default function PoemaExperience({
           fill
           priority
           sizes="100vw"
-          className="object-cover brightness-[0.18] saturate-[0.4] blur-[1px]"
+          className="object-cover brightness-[0.62] saturate-[0.9]"
         />
-        <div className="absolute inset-0 bg-[rgba(6,4,15,0.55)]" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 48% at 50% 52%, rgba(6,4,15,0.82) 0%, rgba(6,4,15,0.55) 45%, rgba(6,4,15,0.22) 78%, rgba(6,4,15,0.1) 100%)",
+          }}
+        />
       </div>
 
       {/* Camada 1: cena 3D */}
