@@ -245,6 +245,83 @@ export const poemas: Poema[] = [
       ],
     ],
   },
+  {
+    slug: "o-eco-do-que-nunca-foi-dito",
+    numero: "VI",
+    titulo: "O Eco do Que Nunca Foi Dito",
+    sub: "",
+    imagem: "/assets/images/eco.webp",
+    preview: [
+      "Alguns acreditam que os grandes nós da vida são feitos de cordas.",
+      "Poucos percebem que os maiores — são feitos de silêncio.",
+    ],
+    cena: 2,
+    corAmbiente: "#5ac8c8",
+    estrofes: [
+      [
+        "Alguns acreditam que os grandes nós da vida são feitos de cordas.",
+        "Poucos percebem que os maiores — são feitos de silêncio.",
+      ],
+      [
+        "Da ausência daquilo que um dia poderíamos ter dito.",
+        "Das pequenas travas que colocamos pra evitar um desastre,",
+        "uma discussão, uma vergonha —",
+        "ou simplesmente porque achamos que ainda não era a hora.",
+      ],
+      ["Às vezes nem são palavras."],
+      [
+        "É o beijo que nunca foi roubado.",
+        "O vai toma no seu cu que ficou preso na garganta.",
+        "O eu te amo dito sem ser sentido.",
+        "O pedido de casamento ensaiado que nunca saiu.",
+      ],
+      [
+        "Se houvesse um universo de possibilidades",
+        "que foram criadas mas nunca chegaram a existir —",
+        "ele seria mais imenso e intenso",
+        "do que todos os que de fato existem.",
+      ],
+      [
+        "Mais puro. Mais gostoso. Mais real",
+        "do que a realidade que de fato vivemos.",
+      ],
+      [
+        "Nesse mundo não existiria falsidade —",
+        "pois o que se sente não poderia ser não dito.",
+        "Tudo transpareceria.",
+        "E as relações seriam construídas",
+        "sobre o único material que nunca mente:",
+        "o sentimento genuíno.",
+      ],
+      [
+        "Mesmo que eu nunca tenha dito o que não disse,",
+        "sei que às vezes foi muito mais verdadeiro",
+        "do que tudo que eu de fato proferi.",
+      ],
+      ["Às vezes a gente nem falar sabe."],
+      [
+        "Nesse mundo do que nunca vivi",
+        "porque nunca me permiti dizer —",
+        "o silêncio seria o único pecado",
+        "que jamais ninguém cometeria.",
+      ],
+      [
+        "E seria uma máxima dizer",
+        "que ali nos encontraríamos todos —",
+        "e muitas vezes —",
+        "procurando desesperadamente",
+        "onde estaria perdida a nossa essência.",
+      ],
+      [
+        "Espalhada. Deixada de lado.",
+        "A cada resposta não dada.",
+        "A cada sonho engolido pela realidade.",
+        "A cada verdade que ficou presa",
+        "no único universo que nunca existiu —",
+        "mas que sempre foi o mais real de todos.",
+      ],
+    ],
+  },
 ];
 
 export function getPoemaBySlug(slug: string): Poema | undefined {
