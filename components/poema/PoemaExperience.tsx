@@ -234,7 +234,7 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
 
       {/* Conteúdo — estrofes reveladas ao rolar a página */}
       <main className="relative z-[5]">
-        <div className="h-[20vh]" />
+        <div className="h-[14vh]" />
         {poema.estrofes.map((versos, i) => (
           <StanzaSection
             key={i}

@@ -39,7 +39,7 @@ export default function StanzaSection({
   return (
     <section
       id={id}
-      className="relative z-[5] flex min-h-[70vh] w-full items-center justify-center px-5 pb-16 pt-24 sm:min-h-[85vh]"
+      className="relative z-[5] flex w-full items-center justify-center px-5 py-10 sm:py-12"
     >
       <div
         className={
