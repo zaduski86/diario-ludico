@@ -7,6 +7,7 @@ import Image from "next/image";
 import CoverParticles from "./CoverParticles";
 import Starfield from "./Starfield";
 import IdentidadeModal from "./IdentidadeModal";
+import SaudacaoModal from "./SaudacaoModal";
 import { getLeitorLocal, identificarLeitor } from "@/lib/supabase";
 
 const TITULO = "Diário Lúdico da Realidade Paralela";
@@ -15,6 +16,7 @@ export default function Capa() {
   const router = useRouter();
   const [imploding, setImploding] = useState(false);
   const [mostrarIdentidade, setMostrarIdentidade] = useState(false);
+  const [nomeSaudacao, setNomeSaudacao] = useState<string | null>(null);
 
   function iniciarTransicao() {
     setImploding(true);
@@ -22,9 +24,10 @@ export default function Capa() {
   }
 
   function entrar() {
-    if (mostrarIdentidade) return;
-    if (getLeitorLocal()) {
-      iniciarTransicao();
+    if (mostrarIdentidade || nomeSaudacao) return;
+    const leitor = getLeitorLocal();
+    if (leitor) {
+      setNomeSaudacao(leitor.nome);
     } else {
       setMostrarIdentidade(true);
     }
@@ -33,7 +36,7 @@ export default function Capa() {
   async function confirmarIdentidade(nome: string) {
     await identificarLeitor(nome);
     setMostrarIdentidade(false);
-    iniciarTransicao();
+    setNomeSaudacao(nome);
   }
 
   return (
@@ -113,6 +116,9 @@ export default function Capa() {
 
       {mostrarIdentidade && (
         <IdentidadeModal onConfirmar={confirmarIdentidade} />
+      )}
+      {nomeSaudacao && (
+        <SaudacaoModal nome={nomeSaudacao} onContinuar={iniciarTransicao} />
       )}
     </motion.div>
   );
