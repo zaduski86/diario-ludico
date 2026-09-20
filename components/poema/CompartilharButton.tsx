@@ -37,7 +37,7 @@ export default function CompartilharButton({
   return (
     <button
       onClick={compartilhar}
-      className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-[3px] text-[#6a5898] transition-colors hover:text-[#c8a030]"
+      className="flex flex-col items-center gap-1 border border-[rgba(200,160,48,0.4)] px-6 py-2.5 text-[11px] uppercase tracking-[3px] text-[#c8a030] transition-colors duration-300 hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
     >
       <span>{feedback ?? "compartilhar este poema"}</span>
     </button>

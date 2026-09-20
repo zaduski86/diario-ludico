@@ -36,7 +36,27 @@ Sem essas variáveis o site funciona normalmente — apenas o registro de
 visitas/comentários fica desativado.
 
 Rode `supabase/schema.sql` no SQL Editor do projeto Supabase para criar as
-tabelas `visitas` e `comentarios` antes de configurar as variáveis acima.
+tabelas `leitores`, `visitas`, `compartilhamentos` e `comentarios` antes de
+configurar as variáveis acima.
+
+## Modo autor (apagar comentários)
+
+Três variáveis extras, todas configuradas só na Vercel (nunca comitadas):
+
+```
+NEXT_PUBLIC_ADMIN_NOME=<seu nome — o gatilho digitado no modal de entrada>
+ADMIN_PASSWORD=<sua senha>
+SUPABASE_SERVICE_ROLE_KEY=<chave service_role do Supabase — Project Settings → API>
+```
+
+Ao digitar esse nome exato no modal "quem deseja adentrar", aparece um campo
+de senha. Confirmando a senha certa, comentários passam a ter um botão
+"apagar" (com confirmação). A senha e a chave `service_role` nunca chegam ao
+navegador — a verificação e o delete acontecem em rotas de servidor
+(`app/api/admin/*`).
+
+Sem essas três variáveis, o modo autor fica invisível — ninguém consegue
+apagar comentários, e o site funciona normalmente.
 
 ## Deploy
 

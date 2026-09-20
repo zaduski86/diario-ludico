@@ -9,6 +9,7 @@ import {
   listarComentarios,
   type Comentario,
 } from "@/lib/supabase";
+import { apagarComentarioAdmin, isAdminSessao } from "@/components/useAdmin";
 
 function tempoRelativo(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -28,14 +29,30 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [disponivel, setDisponivel] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  const [apagando, setApagando] = useState<string | null>(null);
+  const [confirmando, setConfirmando] = useState<string | null>(null);
 
   useEffect(() => {
     if (!getSupabase()) return;
     setDisponivel(true);
+    setAdmin(isAdminSessao());
     const leitor = getLeitorLocal();
     if (leitor?.nome) setNome(leitor.nome);
     listarComentarios(poemaSlug).then(setComentarios);
   }, [poemaSlug]);
+
+  async function apagar(id: string) {
+    if (confirmando !== id) {
+      setConfirmando(id);
+      return;
+    }
+    setApagando(id);
+    const ok = await apagarComentarioAdmin(id);
+    setApagando(null);
+    setConfirmando(null);
+    if (ok) setComentarios((c) => c.filter((x) => x.id !== id));
+  }
 
   async function enviar() {
     const nomeLimpo = nome.trim();
@@ -75,18 +92,18 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mb-6 text-center text-[10px] uppercase tracking-[4px] text-[#6a5898]"
+        className="mb-6 text-center text-[11px] uppercase tracking-[4px] text-[#c8a030]"
       >
         comentários dos leitores
       </motion.h3>
 
-      <div className="mb-8 flex flex-col gap-3 border border-[rgba(200,160,48,0.15)] bg-[rgba(13,8,32,0.5)] p-4">
+      <div className="mb-8 flex flex-col gap-3 border border-[rgba(200,160,48,0.3)] bg-[rgba(13,8,32,0.7)] p-4">
         <input
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           placeholder="seu nome"
           maxLength={60}
-          className="border-b border-[rgba(200,160,48,0.25)] bg-transparent px-1 py-1.5 text-sm text-[#f0ecff] placeholder:text-[#4a3f70] focus:border-[#c8a030] focus:outline-none"
+          className="border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-1.5 text-sm text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
         />
         <textarea
           value={mensagem}
@@ -94,7 +111,7 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
           placeholder="o que esse poema despertou em você?"
           maxLength={1000}
           rows={3}
-          className="resize-none border-b border-[rgba(200,160,48,0.25)] bg-transparent px-1 py-1.5 text-sm text-[#f0ecff] placeholder:text-[#4a3f70] focus:border-[#c8a030] focus:outline-none"
+          className="resize-none border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-1.5 text-sm text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
         />
         <div className="flex items-center justify-between">
           {erro ? (
@@ -125,6 +142,19 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
               <span className="text-[10px] text-[#4a3f70]">
                 {tempoRelativo(c.created_at)}
               </span>
+              {admin && (
+                <button
+                  onClick={() => apagar(c.id)}
+                  disabled={apagando === c.id}
+                  className="ml-auto text-[10px] uppercase tracking-[2px] text-[#c85050] transition-colors hover:text-[#e87070] disabled:opacity-40"
+                >
+                  {apagando === c.id
+                    ? "apagando…"
+                    : confirmando === c.id
+                      ? "confirmar?"
+                      : "apagar"}
+                </button>
+              )}
             </div>
             <p className="text-[13px] leading-relaxed text-[#c8c0e0]">
               {c.mensagem}

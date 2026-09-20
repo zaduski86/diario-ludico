@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { loginAdmin, nomeEhAdmin } from "./useAdmin";
 
 export default function IdentidadeModal({
   onConfirmar,
@@ -9,12 +10,28 @@ export default function IdentidadeModal({
   onConfirmar: (nome: string) => void;
 }) {
   const [nome, setNome] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erroSenha, setErroSenha] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
-  function confirmar() {
+  const ehAdmin = nomeEhAdmin(nome);
+
+  async function confirmar() {
     const limpo = nome.trim();
     if (!limpo || enviando) return;
-    setEnviando(true);
+
+    if (ehAdmin) {
+      if (!senha) return;
+      setEnviando(true);
+      const ok = await loginAdmin(senha);
+      if (!ok) {
+        setErroSenha(true);
+        setEnviando(false);
+        return;
+      }
+    } else {
+      setEnviando(true);
+    }
     onConfirmar(limpo);
   }
 
@@ -58,16 +75,42 @@ export default function IdentidadeModal({
           >
             <input
               value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && confirmar()}
+              onChange={(e) => {
+                setNome(e.target.value);
+                setErroSenha(false);
+              }}
+              onKeyDown={(e) => e.key === "Enter" && !ehAdmin && confirmar()}
               placeholder="seu nome"
               maxLength={60}
               autoFocus
               className="w-full border-b border-[rgba(200,160,48,0.35)] bg-transparent px-2 py-2.5 text-center text-sm italic text-[#f0ecff] placeholder:text-[#4a3f70] focus:border-[#c8a030] focus:outline-none"
             />
+
+            {ehAdmin && (
+              <motion.input
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                type="password"
+                value={senha}
+                onChange={(e) => {
+                  setSenha(e.target.value);
+                  setErroSenha(false);
+                }}
+                onKeyDown={(e) => e.key === "Enter" && confirmar()}
+                placeholder="senha do autor"
+                autoFocus
+                className="mt-4 w-full border-b border-[rgba(200,160,48,0.35)] bg-transparent px-2 py-2.5 text-center text-sm italic text-[#f0ecff] placeholder:text-[#4a3f70] focus:border-[#c8a030] focus:outline-none"
+              />
+            )}
+            {erroSenha && (
+              <p className="mt-2 text-[10px] text-[#c85050]">
+                senha incorreta
+              </p>
+            )}
+
             <button
               onClick={confirmar}
-              disabled={!nome.trim() || enviando}
+              disabled={!nome.trim() || (ehAdmin && !senha) || enviando}
               className="mx-auto mt-7 block border border-[rgba(200,160,48,0.4)] px-9 py-2.5 text-[11px] uppercase tracking-[4px] text-[#c8a030] transition-colors duration-300 hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a] disabled:opacity-30"
             >
               Entrar
