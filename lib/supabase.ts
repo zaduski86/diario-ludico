@@ -6,19 +6,109 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 let client: SupabaseClient | null = null;
 
 // Supabase é opcional: o site funciona normalmente sem as variáveis de
-// ambiente configuradas. Quando presentes, habilita registro de visitas e
-// comentários dos leitores (ver supabase/schema.sql).
+// ambiente configuradas. Quando presentes, habilita identidade do leitor,
+// registro de visitas/compartilhamentos e comentários (ver
+// supabase/schema.sql).
 export function getSupabase(): SupabaseClient | null {
   if (!url || !anonKey) return null;
   if (!client) client = createClient(url, anonKey);
   return client;
 }
 
+const CHAVE_LEITOR = "diario-ludico:leitor";
+
+export type Leitor = { id: string; nome: string };
+
+/** Lê o leitor salvo neste navegador, sem tocar a rede. */
+export function getLeitorLocal(): Leitor | null {
+  try {
+    const bruto = window.localStorage.getItem(CHAVE_LEITOR);
+    if (!bruto) return null;
+    const leitor = JSON.parse(bruto);
+    if (leitor?.id && leitor?.nome) return leitor;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function salvarLeitorLocal(leitor: Leitor) {
+  try {
+    window.localStorage.setItem(CHAVE_LEITOR, JSON.stringify(leitor));
+  } catch {
+    // Sem localStorage — a identidade não persiste entre visitas.
+  }
+}
+
+/**
+ * Cria (ou atualiza) o registro do leitor a partir do nome informado.
+ * Sem Supabase configurado, ainda assim salva localmente para não travar
+ * a experiência.
+ */
+export async function identificarLeitor(nome: string): Promise<Leitor> {
+  const existente = getLeitorLocal();
+  const supabase = getSupabase();
+
+  if (!supabase) {
+    const leitor = existente?.id
+      ? { ...existente, nome }
+      : { id: crypto.randomUUID(), nome };
+    salvarLeitorLocal(leitor);
+    return leitor;
+  }
+
+  try {
+    if (existente?.id) {
+      await supabase
+        .from("leitores")
+        .update({ nome, ultima_visita: new Date().toISOString() })
+        .eq("id", existente.id);
+      const leitor = { id: existente.id, nome };
+      salvarLeitorLocal(leitor);
+      return leitor;
+    }
+    const { data, error } = await supabase
+      .from("leitores")
+      .insert({ nome })
+      .select("id")
+      .single();
+    if (error || !data) throw error;
+    const leitor = { id: data.id as string, nome };
+    salvarLeitorLocal(leitor);
+    return leitor;
+  } catch {
+    const leitor = existente?.id
+      ? { ...existente, nome }
+      : { id: crypto.randomUUID(), nome };
+    salvarLeitorLocal(leitor);
+    return leitor;
+  }
+}
+
 export async function registrarVisita(poemaSlug: string) {
   const supabase = getSupabase();
   if (!supabase) return;
   try {
-    await supabase.from("visitas").insert({ poema_slug: poemaSlug });
+    const leitor = getLeitorLocal();
+    await supabase
+      .from("visitas")
+      .insert({ poema_slug: poemaSlug, leitor_id: leitor?.id ?? null });
+  } catch {
+    // Silencioso: analytics nunca deve quebrar a experiência de leitura.
+  }
+}
+
+export async function registrarCompartilhamento(
+  poemaSlug: string,
+  tipo: "link" | "cartao",
+) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  try {
+    const leitor = getLeitorLocal();
+    await supabase
+      .from("compartilhamentos")
+      .insert({ poema_slug: poemaSlug, tipo, leitor_id: leitor?.id ?? null });
   } catch {
     // Silencioso: analytics nunca deve quebrar a experiência de leitura.
   }

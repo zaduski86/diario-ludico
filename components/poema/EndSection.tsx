@@ -2,10 +2,15 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import CompartilharButton from "./CompartilharButton";
 
 export default function EndSection({
+  slug,
+  titulo,
   proximoPoema,
 }: {
+  slug: string;
+  titulo: string;
   proximoPoema?: { slug: string; titulo: string };
 }) {
   const router = useRouter();
@@ -29,12 +34,21 @@ export default function EndSection({
         fim
       </motion.div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4, duration: 0.8 }}
+      >
+        <CompartilharButton slug={slug} titulo={titulo} />
+      </motion.div>
+
       {proximoPoema && (
         <motion.button
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.45, duration: 0.8 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
           onClick={() => router.push(`/poema/${proximoPoema.slug}`)}
           className="group flex flex-col items-center gap-1"
         >
@@ -51,7 +65,7 @@ export default function EndSection({
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.6, duration: 0.8 }}
+        transition={{ delay: 0.65, duration: 0.8 }}
         onClick={() => router.push("/hub")}
         className="border border-[rgba(200,160,48,0.4)] px-9 py-3 text-[11px] uppercase tracking-[4px] text-[#c8a030] transition-colors duration-300 hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
       >

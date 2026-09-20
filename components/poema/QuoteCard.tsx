@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { registrarCompartilhamento } from "@/lib/supabase";
 
 const W = 1080;
 const H = 1350;
@@ -28,11 +29,13 @@ function quebrarLinhas(
 }
 
 export default function QuoteCard({
+  slug,
   verso,
   titulo,
   imagem,
   onClose,
 }: {
+  slug: string;
   verso: string;
   titulo: string;
   imagem: string;
@@ -98,6 +101,7 @@ export default function QuoteCard({
     link.download = `${titulo.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-verso.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
+    registrarCompartilhamento(slug, "cartao");
   }
 
   return (

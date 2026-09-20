@@ -13,6 +13,7 @@ import ProgressDots from "./ProgressDots";
 import FontSizeToggle from "./FontSizeToggle";
 import ResumoLeitura from "./ResumoLeitura";
 import QuoteCard from "./QuoteCard";
+import Comentarios from "./Comentarios";
 import { useFontScale } from "./useFontScale";
 
 const CHAVE_PROGRESSO = (slug: string) => `diario-ludico:progresso:${slug}`;
@@ -225,6 +226,7 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
 
       {versoCompartilhar && (
         <QuoteCard
+          slug={poema.slug}
           verso={versoCompartilhar}
           titulo={poema.titulo}
           imagem={poema.imagem}
@@ -247,10 +249,13 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
           />
         ))}
         <EndSection
+          slug={poema.slug}
+          titulo={poema.titulo}
           proximoPoema={
             proximo ? { slug: proximo.slug, titulo: proximo.titulo } : undefined
           }
         />
+        <Comentarios poemaSlug={poema.slug} />
       </main>
     </motion.div>
   );

@@ -6,16 +6,34 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import CoverParticles from "./CoverParticles";
 import Starfield from "./Starfield";
+import IdentidadeModal from "./IdentidadeModal";
+import { getLeitorLocal, identificarLeitor } from "@/lib/supabase";
 
 const TITULO = "Diário Lúdico da Realidade Paralela";
 
 export default function Capa() {
   const router = useRouter();
   const [imploding, setImploding] = useState(false);
+  const [mostrarIdentidade, setMostrarIdentidade] = useState(false);
 
-  function entrar() {
+  function iniciarTransicao() {
     setImploding(true);
     setTimeout(() => router.push("/hub"), 650);
+  }
+
+  function entrar() {
+    if (mostrarIdentidade) return;
+    if (getLeitorLocal()) {
+      iniciarTransicao();
+    } else {
+      setMostrarIdentidade(true);
+    }
+  }
+
+  async function confirmarIdentidade(nome: string) {
+    await identificarLeitor(nome);
+    setMostrarIdentidade(false);
+    iniciarTransicao();
   }
 
   return (
@@ -92,6 +110,10 @@ export default function Capa() {
       >
         <span className="relative z-10">Entrar</span>
       </motion.button>
+
+      {mostrarIdentidade && (
+        <IdentidadeModal onConfirmar={confirmarIdentidade} />
+      )}
     </motion.div>
   );
 }
