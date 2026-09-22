@@ -86,11 +86,34 @@ export async function identificarLeitor(nome: string): Promise<Leitor> {
   }
 }
 
+/**
+ * Garante que o leitor salvo neste navegador tenha uma linha correspondente
+ * em `leitores`. Cobre leitores criados durante alguma falha passada do
+ * Supabase (identidade salva só localmente) — sem isso, qualquer inserção
+ * que referencie leitor_id (leituras_completas, sussurros) falha calada por
+ * violar a chave estrangeira.
+ */
+async function garantirLeitorNoBanco(leitor: Leitor) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  try {
+    await supabase
+      .from("leitores")
+      .upsert(
+        { id: leitor.id, nome: leitor.nome },
+        { onConflict: "id", ignoreDuplicates: true },
+      );
+  } catch {
+    // Silencioso: tentativas futuras cobrem isso.
+  }
+}
+
 export async function registrarVisita(poemaSlug: string) {
   const supabase = getSupabase();
   if (!supabase) return;
   try {
     const leitor = getLeitorLocal();
+    if (leitor) await garantirLeitorNoBanco(leitor);
     await supabase
       .from("visitas")
       .insert({ poema_slug: poemaSlug, leitor_id: leitor?.id ?? null });
