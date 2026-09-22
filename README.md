@@ -36,8 +36,19 @@ Sem essas variáveis o site funciona normalmente — apenas o registro de
 visitas/comentários fica desativado.
 
 Rode `supabase/schema.sql` no SQL Editor do projeto Supabase para criar as
-tabelas `leitores`, `visitas`, `compartilhamentos` e `comentarios` antes de
-configurar as variáveis acima.
+tabelas `leitores`, `visitas`, `compartilhamentos`, `comentarios`,
+`leituras_completas` e `sussurros` antes de configurar as variáveis acima.
+
+## Sussurros
+
+Ícone "?" no hub. Quando um leitor identificado termina a leitura de um
+poema (~92% de scroll), isso é salvo em `leituras_completas`. Se, com essa
+marcação, o leitor tiver lido todos os poemas existentes em `lib/poemas.ts`,
+o modal de sussurros libera a opção de deixar um recado público — e, se essa
+foi a última peça faltando, o `GenioModal` aparece automaticamente na hora,
+convidando o leitor a deixar sua marca. A contagem de "todos os poemas" usa
+`poemas.length`, então novos poemas adicionados entram automaticamente na
+conta — não precisa mexer em nada além do array.
 
 ## Modo autor (apagar comentários)
 

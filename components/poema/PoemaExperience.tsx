@@ -5,7 +5,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { poemas, type Poema } from "@/lib/poemas";
-import { registrarVisita } from "@/lib/supabase";
+import {
+  registrarVisita,
+  marcarPoemaLido,
+  leuTodosPoemas,
+  getLeitorLocal,
+} from "@/lib/supabase";
 import SceneCanvas from "./SceneCanvas";
 import StanzaSection from "./StanzaSection";
 import EndSection from "./EndSection";
@@ -14,9 +19,11 @@ import FontSizeToggle from "./FontSizeToggle";
 import ResumoLeitura from "./ResumoLeitura";
 import QuoteCard from "./QuoteCard";
 import Comentarios from "./Comentarios";
+import GenioModal from "../GenioModal";
 import { useFontScale } from "./useFontScale";
 
 const CHAVE_PROGRESSO = (slug: string) => `diario-ludico:progresso:${slug}`;
+const CHAVE_GENIO_VISTO = "diario-ludico:genio-visto";
 
 export default function PoemaExperience({ poema }: { poema: Poema }) {
   const router = useRouter();
@@ -26,10 +33,12 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
     null,
   );
   const [mostrarResumo, setMostrarResumo] = useState(false);
+  const [mostrarGenio, setMostrarGenio] = useState(false);
   const [escala, setEscala] = useFontScale();
   const tickAgendado = useRef(false);
   const ultimoSalvo = useRef(0);
   const resumoDecidido = useRef(false);
+  const leituraMarcada = useRef(false);
 
   const indiceAtual = poemas.findIndex((p) => p.slug === poema.slug);
   const proximo = poemas[indiceAtual + 1];
@@ -98,6 +107,36 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
       window.removeEventListener("resize", aoRolar);
     };
   }, [poema.slug]);
+
+  // Ao terminar o poema, marca a leitura (silenciosamente) e, se essa era a
+  // última peça faltando, revela o gênio que libera os sussurros.
+  useEffect(() => {
+    if (leituraMarcada.current || progresso < 0.92) return;
+    leituraMarcada.current = true;
+    (async () => {
+      const leitor = getLeitorLocal();
+      if (!leitor) return;
+      await marcarPoemaLido(poema.slug);
+      let jaVisto = false;
+      try {
+        jaVisto = window.localStorage.getItem(CHAVE_GENIO_VISTO) === "1";
+      } catch {
+        // Assume que não viu ainda.
+      }
+      if (jaVisto) return;
+      const completou = await leuTodosPoemas(leitor.id);
+      if (completou) setMostrarGenio(true);
+    })();
+  }, [progresso, poema.slug]);
+
+  function fecharGenio() {
+    setMostrarGenio(false);
+    try {
+      window.localStorage.setItem(CHAVE_GENIO_VISTO, "1");
+    } catch {
+      // Sem localStorage — pode reaparecer numa próxima visita.
+    }
+  }
 
   // Marca qual estrofe está mais próxima do centro da tela (para os pontos de navegação).
   useEffect(() => {
@@ -223,6 +262,8 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
           />
         )}
       </AnimatePresence>
+
+      {mostrarGenio && <GenioModal onClose={fecharGenio} />}
 
       {versoCompartilhar && (
         <QuoteCard

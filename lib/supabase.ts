@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { poemas } from "./poemas";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -146,5 +147,74 @@ export async function enviarComentario(
   const { error } = await supabase
     .from("comentarios")
     .insert({ poema_slug: poemaSlug, nome, mensagem });
+  return { error: error?.message ?? null };
+}
+
+/**
+ * Marca silenciosamente que o leitor atual terminou este poema. Usado só
+ * para liberar os sussurros — nunca deve interromper a leitura em caso de
+ * falha.
+ */
+export async function marcarPoemaLido(poemaSlug: string) {
+  const supabase = getSupabase();
+  const leitor = getLeitorLocal();
+  if (!supabase || !leitor) return;
+  try {
+    await supabase
+      .from("leituras_completas")
+      .upsert(
+        { leitor_id: leitor.id, poema_slug: poemaSlug },
+        { onConflict: "leitor_id,poema_slug", ignoreDuplicates: true },
+      );
+  } catch {
+    // Silencioso: não deve afetar a leitura.
+  }
+}
+
+/** Quantos poemas (do total existente hoje) esse leitor já terminou. */
+export async function contarPoemasLidos(leitorId: string): Promise<number> {
+  const supabase = getSupabase();
+  if (!supabase) return 0;
+  const { data, error } = await supabase
+    .from("leituras_completas")
+    .select("poema_slug")
+    .eq("leitor_id", leitorId);
+  if (error || !data) return 0;
+  const slugsValidos = new Set(poemas.map((p) => p.slug));
+  return new Set(
+    data.map((d) => d.poema_slug).filter((s) => slugsValidos.has(s)),
+  ).size;
+}
+
+export async function leuTodosPoemas(leitorId: string): Promise<boolean> {
+  const lidos = await contarPoemasLidos(leitorId);
+  return lidos >= poemas.length;
+}
+
+export type Sussurro = {
+  id: string;
+  nome: string;
+  mensagem: string;
+  created_at: string;
+};
+
+export async function listarSussurros(): Promise<Sussurro[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("sussurros")
+    .select("id, nome, mensagem, created_at")
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return data as Sussurro[];
+}
+
+export async function enviarSussurro(nome: string, mensagem: string) {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase não configurado" };
+  const leitor = getLeitorLocal();
+  const { error } = await supabase
+    .from("sussurros")
+    .insert({ leitor_id: leitor?.id ?? null, nome, mensagem });
   return { error: error?.message ?? null };
 }

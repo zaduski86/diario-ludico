@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { poemas } from "@/lib/poemas";
 import HubCard from "./HubCard";
 import Starfield from "./Starfield";
+import SussurrosButton from "./SussurrosButton";
 
 export default function Hub() {
   const router = useRouter();
@@ -32,6 +33,8 @@ export default function Hub() {
           ← Diário Lúdico
         </span>
       </nav>
+
+      <SussurrosButton />
 
       <h2 className="relative z-10 mb-13 text-[11px] uppercase tracking-[5px] text-[#6a5898]">
         Escolha por onde entrar

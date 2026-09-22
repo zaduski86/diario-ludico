@@ -36,10 +36,28 @@ create table if not exists comentarios (
   created_at timestamptz not null default now()
 );
 
+create table if not exists leituras_completas (
+  id uuid primary key default gen_random_uuid(),
+  leitor_id uuid not null references leitores(id) on delete cascade,
+  poema_slug text not null,
+  created_at timestamptz not null default now(),
+  unique (leitor_id, poema_slug)
+);
+
+create table if not exists sussurros (
+  id uuid primary key default gen_random_uuid(),
+  leitor_id uuid references leitores(id) on delete set null,
+  nome text not null check (char_length(nome) between 1 and 60),
+  mensagem text not null check (char_length(mensagem) between 1 and 300),
+  created_at timestamptz not null default now()
+);
+
 alter table leitores enable row level security;
 alter table visitas enable row level security;
 alter table compartilhamentos enable row level security;
 alter table comentarios enable row level security;
+alter table leituras_completas enable row level security;
+alter table sussurros enable row level security;
 
 -- Leitores: qualquer visitante pode se cadastrar e atualizar seu próprio
 -- registro (identificado pelo id salvo no navegador, não há senha).
@@ -67,4 +85,23 @@ create policy "permitir leitura de comentarios" on comentarios
   for select to anon using (true);
 drop policy if exists "permitir insercao de comentarios" on comentarios;
 create policy "permitir insercao de comentarios" on comentarios
+  for insert to anon with check (true);
+
+-- Leituras completas: marca silenciosamente quando um leitor termina um
+-- poema (usado para liberar os sussurros). Leitura própria, sem exposição
+-- pública da lista inteira.
+drop policy if exists "permitir insercao de leituras completas" on leituras_completas;
+create policy "permitir insercao de leituras completas" on leituras_completas
+  for insert to anon with check (true);
+drop policy if exists "permitir leitura de leituras completas" on leituras_completas;
+create policy "permitir leitura de leituras completas" on leituras_completas
+  for select to anon using (true);
+
+-- Sussurros: só quem já leu tudo pode deixar (checado no app), mas a
+-- leitura é pública — são pistas para qualquer visitante desbloquear.
+drop policy if exists "permitir leitura de sussurros" on sussurros;
+create policy "permitir leitura de sussurros" on sussurros
+  for select to anon using (true);
+drop policy if exists "permitir insercao de sussurros" on sussurros;
+create policy "permitir insercao de sussurros" on sussurros
   for insert to anon with check (true);
