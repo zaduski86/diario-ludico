@@ -16,7 +16,7 @@ export default function SussurrosModal({
   onClose: () => void;
 }) {
   const [carregando, setCarregando] = useState(true);
-  const [liberado, setLiberado] = useState(false);
+  const [podeEscrever, setPodeEscrever] = useState(false);
   const [sussurro, setSussurro] = useState<Sussurro | null>(null);
   const [nome, setNome] = useState("");
   const [mensagem, setMensagem] = useState("");
@@ -27,18 +27,13 @@ export default function SussurrosModal({
     (async () => {
       const leitor = getLeitorLocal();
       if (leitor?.nome) setNome(leitor.nome);
-      if (!leitor) {
-        setCarregando(false);
-        return;
-      }
-      const [pode, lista] = await Promise.all([
-        leuTodosPoemas(leitor.id),
-        listarSussurros(),
-      ]);
-      setLiberado(pode);
+
+      const lista = await listarSussurros();
       if (lista.length > 0) {
         setSussurro(lista[Math.floor(Math.random() * lista.length)]);
       }
+
+      if (leitor) setPodeEscrever(await leuTodosPoemas(leitor.id));
       setCarregando(false);
     })();
   }, []);
@@ -78,24 +73,10 @@ export default function SussurrosModal({
           </p>
 
           {carregando && (
-            <p className="text-[13px] italic text-[#8a7fb0]">
-              escutando…
-            </p>
+            <p className="text-[13px] italic text-[#8a7fb0]">escutando…</p>
           )}
 
-          {!carregando && !liberado && (
-            <>
-              <h2 className="mb-6 text-[clamp(16px,2.8vw,20px)] italic leading-relaxed text-[#f0ecff]">
-                &ldquo;Os sussurros só se ouvem depois que se atravessa
-                tudo.&rdquo;
-              </h2>
-              <p className="text-[11px] italic text-[#4a3f70]">
-                volte quando a jornada estiver completa.
-              </p>
-            </>
-          )}
-
-          {!carregando && liberado && (
+          {!carregando && (
             <>
               {sussurro && (
                 <motion.blockquote
@@ -104,7 +85,7 @@ export default function SussurrosModal({
                   transition={{ delay: 0.3, duration: 0.8 }}
                   className="mb-8 border-l border-[rgba(200,160,48,0.35)] pl-4 text-left"
                 >
-                  <p className="text-[14px] italic leading-relaxed text-[#f0ecff]">
+                  <p className="text-[16px] italic leading-relaxed text-[#f0ecff]">
                     &ldquo;{sussurro.mensagem}&rdquo;
                   </p>
                   <footer className="mt-2 text-[10px] uppercase tracking-[2px] text-[#c8a030]">
@@ -113,41 +94,46 @@ export default function SussurrosModal({
                 </motion.blockquote>
               )}
               {!sussurro && (
-                <p className="mb-8 text-[12px] italic text-[#4a3f70]">
-                  ainda não há sussurros — o primeiro pode ser seu.
+                <p className="mb-8 text-[13px] italic text-[#4a3f70]">
+                  ainda não há sussurros — quem ler tudo pode deixar o
+                  primeiro.
                 </p>
               )}
 
-              {enviado ? (
-                <p className="text-[12px] italic text-[#c8a030]">
-                  seu sussurro agora faz parte deste lugar.
-                </p>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <input
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    placeholder="seu nome"
-                    maxLength={60}
-                    className="border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-1.5 text-center text-sm text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
-                  />
-                  <textarea
-                    value={mensagem}
-                    onChange={(e) => setMensagem(e.target.value)}
-                    placeholder="deixe seu sussurro para quem ainda vai chegar"
-                    maxLength={300}
-                    rows={3}
-                    className="resize-none border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-1.5 text-center text-sm text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
-                  />
-                  <button
-                    onClick={enviar}
-                    disabled={!nome.trim() || !mensagem.trim() || enviando}
-                    className="mx-auto mt-2 border border-[rgba(200,160,48,0.4)] px-8 py-2.5 text-[10px] uppercase tracking-[3px] text-[#c8a030] transition-colors hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a] disabled:opacity-30"
-                  >
-                    {enviando ? "sussurrando…" : "deixar meu sussurro"}
-                  </button>
-                </div>
-              )}
+              {podeEscrever &&
+                (enviado ? (
+                  <p className="text-[14px] italic text-[#c8a030]">
+                    seu sussurro agora faz parte deste lugar.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-3 border-t border-[rgba(200,160,48,0.2)] pt-6">
+                    <p className="text-[10px] uppercase tracking-[3px] text-[#6a5898]">
+                      você leu tudo — deixe o seu
+                    </p>
+                    <input
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="seu nome"
+                      maxLength={60}
+                      className="border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-2 text-center text-base text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
+                    />
+                    <textarea
+                      value={mensagem}
+                      onChange={(e) => setMensagem(e.target.value)}
+                      placeholder="deixe seu sussurro para quem ainda vai chegar"
+                      maxLength={300}
+                      rows={3}
+                      className="resize-none border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-2 text-center text-base text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
+                    />
+                    <button
+                      onClick={enviar}
+                      disabled={!nome.trim() || !mensagem.trim() || enviando}
+                      className="mx-auto mt-2 border border-[rgba(200,160,48,0.4)] px-8 py-2.5 text-[11px] uppercase tracking-[3px] text-[#c8a030] transition-colors hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a] disabled:opacity-30"
+                    >
+                      {enviando ? "sussurrando…" : "deixar meu sussurro"}
+                    </button>
+                  </div>
+                ))}
             </>
           )}
 
