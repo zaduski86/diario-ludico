@@ -110,7 +110,7 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
   // Ao terminar o poema, marca a leitura (silenciosamente) e, se essa era a
   // última peça faltando, revela o gênio que libera os sussurros.
   useEffect(() => {
-    if (leituraMarcada.current || progresso < 0.92) return;
+    if (leituraMarcada.current || progresso < 0.85) return;
     leituraMarcada.current = true;
     (async () => {
       const leitor = getLeitorLocal();

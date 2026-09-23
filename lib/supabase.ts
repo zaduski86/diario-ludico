@@ -4,6 +4,8 @@ import { poemas } from "./poemas";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Força novo hash de build (2026-09-23): contorna cache de rede preso na
+// versão anterior desta chave em alguns pontos entre o navegador e a Vercel.
 let client: SupabaseClient | null = null;
 
 // Supabase é opcional: o site funciona normalmente sem as variáveis de
