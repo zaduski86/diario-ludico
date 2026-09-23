@@ -106,6 +106,21 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           </motion.p>
         ))}
 
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 1 }}
+          className="mx-auto mt-4 max-w-[520px] border-y border-[rgba(200,160,48,0.3)] py-8 text-center"
+        >
+          <p className="mb-3 text-[9px] uppercase tracking-[5px] text-[#6a5898]">
+            fragmento da profecia
+          </p>
+          <p className="text-[16px] italic leading-relaxed text-[#c8a030]">
+            &ldquo;{capitulo.fragmentoProfecia}&rdquo;
+          </p>
+        </motion.div>
+
         <div className="flex flex-col items-center gap-6 py-24 text-center">
           {proximoLiberado ? (
             <p className="text-[11px] uppercase tracking-[3px] text-[#4a3f70]">

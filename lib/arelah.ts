@@ -7,6 +7,8 @@ export type Capitulo = {
   /** Índice da cena 3D de fundo, reaproveitando o mesmo sistema dos poemas. */
   cena: number;
   paragrafos: string[];
+  /** Fragmento da profecia revelado ao final do capítulo — sem explicação. */
+  fragmentoProfecia: string;
 };
 
 /** Arte de capa do livro (viajante diante do rosto de estrelas). */
@@ -38,6 +40,8 @@ export const capitulos: Capitulo[] = [
       "Só Arelah — que apontou pra ela, depois apontou pra Barnabé, e fez algo que nunca havia feito antes.",
       "Sorriu.",
     ],
+    fragmentoProfecia:
+      "No dia em que o quatro encontrou o quatro, nasceu o que não tem fim. Ninguém contou os dias que passaram até ali. Ninguém precisava — o infinito não se soma, se repete.",
   },
   {
     numero: 2,
@@ -115,6 +119,8 @@ export const capitulos: Capitulo[] = [
       "Apontou.",
       "E riu.",
     ],
+    fragmentoProfecia:
+      "O que parece o fim é só o começo, dobrado sobre si mesmo — como tudo que é infinito faz, quando alguém demora demais pra perceber que está olhando.",
   },
 ];
 
