@@ -17,6 +17,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();
   const [carregando, setCarregando] = useState(true);
   const [liberado, setLiberado] = useState(false);
+  const [liberados, setLiberados] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -30,8 +31,9 @@ export default function ArelahExperience({ numero }: { numero: number }) {
         router.replace("/hub");
         return;
       }
-      const liberados = capitulosLiberados(progresso.livroDestrancadoEm);
-      setLiberado(numero <= liberados && numero <= capitulos.length);
+      const qtdLiberados = capitulosLiberados(progresso.livroDestrancadoEm);
+      setLiberados(qtdLiberados);
+      setLiberado(numero <= qtdLiberados && numero <= capitulos.length);
       setCarregando(false);
     })();
   }, [numero, router]);
@@ -43,7 +45,9 @@ export default function ArelahExperience({ numero }: { numero: number }) {
   const capitulo = getCapitulo(numero);
   if (!capitulo) return <CapituloTrancado />;
 
-  const proximoLiberado = numero < capitulos.length;
+  // O próximo capítulo só está de fato disponível se ele existir E já tiver
+  // sido liberado pra esse leitor hoje — não basta ter sido escrito.
+  const proximoDisponivelAgora = numero < liberados && numero < capitulos.length;
 
   return (
     <motion.div
@@ -122,12 +126,12 @@ export default function ArelahExperience({ numero }: { numero: number }) {
         </motion.div>
 
         <div className="flex flex-col items-center gap-6 py-24 text-center">
-          {proximoLiberado ? (
-            <p className="text-[11px] uppercase tracking-[3px] text-[#4a3f70]">
-              fim do capítulo — volte para continuar
+          {proximoDisponivelAgora ? (
+            <p className="text-[13px] uppercase tracking-[3px] text-[#c8a030]">
+              fim do capítulo — o próximo já está liberado
             </p>
           ) : (
-            <p className="glitch-texto max-w-[420px] text-[15px] italic leading-relaxed text-[#8a7fb0]">
+            <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">
               mem...ória carr...egando — vol...te am...anhã
               <br />
               a magia de hoje... já foi.
@@ -150,7 +154,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
 function CapituloTrancado() {
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_50%_30%,#1a1035_0%,#06040f_65%)] px-6 text-center">
-      <p className="glitch-texto max-w-[420px] text-[16px] italic leading-relaxed text-[#c8c0e0]">
+      <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">
         mem...ória carr...egando — vol...te am...anhã
         <br />
         a magia de hoje... já foi.
