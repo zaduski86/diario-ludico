@@ -100,7 +100,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.8 }}
-            className="mb-9 text-[clamp(18px,2.4vw,23px)] italic leading-[1.9] text-[#f0ecff]"
+            className="mb-9 text-[clamp(23px,3.1vw,30px)] italic leading-[1.9] text-[#f0ecff]"
           >
             {p}
           </motion.p>

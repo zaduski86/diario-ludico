@@ -5,16 +5,16 @@ import type { EscalaFonte } from "./useFontScale";
 
 const TAMANHOS: Record<EscalaFonte, { normal: string; final: string }> = {
   0: {
-    normal: "text-[clamp(15px,1.6vw,21px)]",
-    final: "text-[clamp(18px,2.1vw,25px)]",
+    normal: "text-[clamp(19px,2.1vw,27px)]",
+    final: "text-[clamp(23px,2.7vw,32px)]",
   },
   1: {
-    normal: "text-[clamp(17px,1.8vw,25px)]",
-    final: "text-[clamp(20px,2.4vw,30px)]",
+    normal: "text-[clamp(22px,2.3vw,32px)]",
+    final: "text-[clamp(26px,3.1vw,39px)]",
   },
   2: {
-    normal: "text-[clamp(19px,2.1vw,29px)]",
-    final: "text-[clamp(23px,2.7vw,35px)]",
+    normal: "text-[clamp(25px,2.7vw,38px)]",
+    final: "text-[clamp(30px,3.5vw,45px)]",
   },
 };
 
