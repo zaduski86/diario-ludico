@@ -194,19 +194,23 @@ export async function marcarPoemaLido(poemaSlug: string) {
   }
 }
 
-/** Quantos poemas (do total existente hoje) esse leitor já terminou. */
-export async function contarPoemasLidos(leitorId: string): Promise<number> {
+/** Slugs (do total existente hoje) que esse leitor já terminou de ler. */
+export async function listarPoemasLidos(leitorId: string): Promise<string[]> {
   const supabase = getSupabase();
-  if (!supabase) return 0;
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("leituras_completas")
     .select("poema_slug")
     .eq("leitor_id", leitorId);
-  if (error || !data) return 0;
+  if (error || !data) return [];
   const slugsValidos = new Set(poemas.map((p) => p.slug));
-  return new Set(
-    data.map((d) => d.poema_slug).filter((s) => slugsValidos.has(s)),
-  ).size;
+  return [...new Set(data.map((d) => d.poema_slug))].filter((s) =>
+    slugsValidos.has(s),
+  );
+}
+
+export async function contarPoemasLidos(leitorId: string): Promise<number> {
+  return (await listarPoemasLidos(leitorId)).length;
 }
 
 export async function leuTodosPoemas(leitorId: string): Promise<boolean> {

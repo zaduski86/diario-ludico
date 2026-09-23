@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { enviarSussurro, getLeitorLocal } from "@/lib/supabase";
+import { enviarSussurro, getLeitorLocal, receberChave } from "@/lib/supabase";
 
 export default function ConviteSussurroModal({
   onClose,
@@ -22,10 +22,14 @@ export default function ConviteSussurroModal({
     if (!nomeLimpo || !mensagemLimpa || enviando) return;
     setEnviando(true);
     const { error } = await enviarSussurro(nomeLimpo, mensagemLimpa);
-    setEnviando(false);
     if (!error) {
+      const leitor = getLeitorLocal();
+      if (leitor) await receberChave(leitor);
+      setEnviando(false);
       setEnviado(true);
       onEnviado();
+    } else {
+      setEnviando(false);
     }
   }
 
@@ -56,9 +60,24 @@ export default function ConviteSussurroModal({
           </h2>
 
           {enviado ? (
-            <p className="text-[14px] italic text-[#c8a030]">
-              feito. seu sussurro agora mora aqui.
-            </p>
+            <div className="flex flex-col gap-4">
+              <p className="text-[14px] italic text-[#c8a030]">
+                feito. seu sussurro agora mora aqui.
+              </p>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="border-t border-[rgba(200,160,48,0.2)] pt-4"
+              >
+                <span className="mb-3 inline-block text-[28px]">🗝️</span>
+                <p className="text-[15px] italic leading-relaxed text-[#f0ecff]">
+                  &ldquo;Seis mundos atravessados, seis verdades absorvidas.
+                  De qualquer forma, isso é seu. Arraste com cuidado. As
+                  coisas boas pesam.&rdquo;
+                </p>
+              </motion.div>
+            </div>
           ) : (
             <div className="flex flex-col gap-3">
               <input
