@@ -52,12 +52,19 @@ create table if not exists sussurros (
   created_at timestamptz not null default now()
 );
 
+create table if not exists arelah_progresso (
+  leitor_id uuid primary key references leitores(id) on delete cascade,
+  chave_recebida_em timestamptz,
+  livro_destrancado_em timestamptz
+);
+
 alter table leitores enable row level security;
 alter table visitas enable row level security;
 alter table compartilhamentos enable row level security;
 alter table comentarios enable row level security;
 alter table leituras_completas enable row level security;
 alter table sussurros enable row level security;
+alter table arelah_progresso enable row level security;
 
 -- Leitores: qualquer visitante pode se cadastrar e atualizar seu próprio
 -- registro (identificado pelo id salvo no navegador, não há senha).
@@ -105,3 +112,15 @@ create policy "permitir leitura de sussurros" on sussurros
 drop policy if exists "permitir insercao de sussurros" on sussurros;
 create policy "permitir insercao de sussurros" on sussurros
   for insert to anon with check (true);
+
+-- Progresso na jornada de Arelah (chave e livro): próprio leitor lê e
+-- grava seu próprio estado, identificado pelo id salvo no navegador.
+drop policy if exists "permitir leitura de arelah_progresso" on arelah_progresso;
+create policy "permitir leitura de arelah_progresso" on arelah_progresso
+  for select to anon using (true);
+drop policy if exists "permitir insercao de arelah_progresso" on arelah_progresso;
+create policy "permitir insercao de arelah_progresso" on arelah_progresso
+  for insert to anon with check (true);
+drop policy if exists "permitir atualizacao de arelah_progresso" on arelah_progresso;
+create policy "permitir atualizacao de arelah_progresso" on arelah_progresso
+  for update to anon using (true) with check (true);

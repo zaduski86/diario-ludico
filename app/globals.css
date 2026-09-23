@@ -52,3 +52,48 @@ body {
 canvas {
   touch-action: none;
 }
+
+@keyframes glitch-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  8% {
+    opacity: 0.3;
+    transform: translate(-2px, 1px);
+  }
+  10% {
+    opacity: 0.9;
+    transform: translate(2px, -1px);
+  }
+  20% {
+    opacity: 0.5;
+    transform: translate(-1px, 0);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  55% {
+    opacity: 0.85;
+  }
+  58% {
+    opacity: 0.2;
+    transform: translate(1px, 1px);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  85% {
+    opacity: 0.6;
+  }
+}
+
+.glitch-texto {
+  animation: glitch-flicker 3.4s infinite;
+  text-shadow:
+    1px 0 rgba(120, 200, 220, 0.5),
+    -1px 0 rgba(200, 80, 80, 0.4);
+}

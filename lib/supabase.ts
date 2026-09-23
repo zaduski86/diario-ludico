@@ -241,3 +241,70 @@ export async function enviarSussurro(nome: string, mensagem: string) {
     .insert({ leitor_id: leitor?.id ?? null, nome, mensagem });
   return { error: error?.message ?? null };
 }
+
+export async function jaDeixouSussurro(leitorId: string): Promise<boolean> {
+  const supabase = getSupabase();
+  if (!supabase) return false;
+  const { count, error } = await supabase
+    .from("sussurros")
+    .select("id", { count: "exact", head: true })
+    .eq("leitor_id", leitorId);
+  if (error) return false;
+  return (count ?? 0) > 0;
+}
+
+export type ArelahProgresso = {
+  chaveRecebidaEm: string | null;
+  livroDestrancadoEm: string | null;
+};
+
+export async function getArelahProgresso(
+  leitorId: string,
+): Promise<ArelahProgresso> {
+  const supabase = getSupabase();
+  const vazio: ArelahProgresso = {
+    chaveRecebidaEm: null,
+    livroDestrancadoEm: null,
+  };
+  if (!supabase) return vazio;
+  const { data, error } = await supabase
+    .from("arelah_progresso")
+    .select("chave_recebida_em, livro_destrancado_em")
+    .eq("leitor_id", leitorId)
+    .maybeSingle();
+  if (error || !data) return vazio;
+  return {
+    chaveRecebidaEm: data.chave_recebida_em,
+    livroDestrancadoEm: data.livro_destrancado_em,
+  };
+}
+
+/** Marca que o gênio entregou a chave a este leitor (só acontece uma vez). */
+export async function receberChave(leitor: Leitor) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  try {
+    await garantirLeitorNoBanco(leitor);
+    await supabase.from("arelah_progresso").upsert(
+      { leitor_id: leitor.id, chave_recebida_em: new Date().toISOString() },
+      { onConflict: "leitor_id", ignoreDuplicates: true },
+    );
+  } catch {
+    // Silencioso: o gênio tenta de novo no próximo clique.
+  }
+}
+
+/** Marca que a chave foi usada no livro, liberando a leitura de Arelah. */
+export async function destrancarLivro(leitor: Leitor) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  try {
+    await garantirLeitorNoBanco(leitor);
+    await supabase
+      .from("arelah_progresso")
+      .update({ livro_destrancado_em: new Date().toISOString() })
+      .eq("leitor_id", leitor.id);
+  } catch {
+    // Silencioso: o leitor pode tentar arrastar a chave de novo.
+  }
+}
