@@ -63,6 +63,17 @@ export default function ArelahHub() {
 
   useEffect(() => {
     recarregar();
+    // Mesmo motivo do AmpulhetasProgresso: o hub pode voltar a ficar
+    // visível sem remontar, deixando o estado do gênio/livro desatualizado.
+    function aoVoltarAFicarVisivel() {
+      if (document.visibilityState === "visible") recarregar();
+    }
+    window.addEventListener("focus", recarregar);
+    document.addEventListener("visibilitychange", aoVoltarAFicarVisivel);
+    return () => {
+      window.removeEventListener("focus", recarregar);
+      document.removeEventListener("visibilitychange", aoVoltarAFicarVisivel);
+    };
   }, [recarregar]);
 
   const temChave = Boolean(chaveRecebidaEm) && !livroDestrancadoEm;

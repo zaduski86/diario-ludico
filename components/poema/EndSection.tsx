@@ -66,7 +66,9 @@ export default function EndSection({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.65, duration: 0.8 }}
-        onClick={() => router.push("/hub")}
+        onClick={() => {
+          window.location.href = "/hub";
+        }}
         className="border border-[rgba(200,160,48,0.4)] px-9 py-3 text-[11px] uppercase tracking-[4px] text-[#c8a030] transition-colors duration-300 hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
       >
         ← Voltar ao início

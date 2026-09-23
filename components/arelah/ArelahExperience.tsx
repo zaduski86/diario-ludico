@@ -83,7 +83,9 @@ export default function ArelahExperience({ numero }: { numero: number }) {
       </div>
 
       <button
-        onClick={() => router.push("/hub")}
+        onClick={() => {
+          window.location.href = "/hub";
+        }}
         className="fixed left-6 top-6 z-20 text-[10px] uppercase tracking-[3px] text-[#6a5898] transition-colors hover:text-[#c8a030]"
       >
         ← Diário Lúdico
@@ -117,7 +119,9 @@ export default function ArelahExperience({ numero }: { numero: number }) {
             </p>
           )}
           <button
-            onClick={() => router.push("/hub")}
+            onClick={() => {
+              window.location.href = "/hub";
+            }}
             className="border border-[rgba(200,160,48,0.4)] px-7 py-2.5 text-[10px] uppercase tracking-[3px] text-[#c8a030] transition-colors hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
           >
             ← voltar ao início
@@ -129,7 +133,6 @@ export default function ArelahExperience({ numero }: { numero: number }) {
 }
 
 function CapituloTrancado() {
-  const router = useRouter();
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_50%_30%,#1a1035_0%,#06040f_65%)] px-6 text-center">
       <p className="glitch-texto max-w-[420px] text-[16px] italic leading-relaxed text-[#c8c0e0]">
@@ -138,7 +141,9 @@ function CapituloTrancado() {
         a magia de hoje... já foi.
       </p>
       <button
-        onClick={() => router.push("/hub")}
+        onClick={() => {
+          window.location.href = "/hub";
+        }}
         className="border border-[rgba(200,160,48,0.4)] px-7 py-2.5 text-[10px] uppercase tracking-[3px] text-[#c8a030] transition-colors hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
       >
         ← voltar ao início

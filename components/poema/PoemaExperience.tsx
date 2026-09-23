@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { poemas, type Poema } from "@/lib/poemas";
 import {
@@ -26,7 +25,6 @@ const CHAVE_PROGRESSO = (slug: string) => `diario-ludico:progresso:${slug}`;
 const CHAVE_GENIO_VISTO = "diario-ludico:genio-visto";
 
 export default function PoemaExperience({ poema }: { poema: Poema }) {
-  const router = useRouter();
   const [progresso, setProgresso] = useState(0);
   const [estrofeAtual, setEstrofeAtual] = useState(0);
   const [versoCompartilhar, setVersoCompartilhar] = useState<string | null>(
@@ -81,14 +79,15 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
       if (agora - ultimoSalvo.current > 400) {
         ultimoSalvo.current = agora;
         try {
-          if (clamped > 0.97) {
-            window.localStorage.removeItem(CHAVE_PROGRESSO(poema.slug));
-          } else {
-            window.localStorage.setItem(
-              CHAVE_PROGRESSO(poema.slug),
-              String(clamped),
-            );
-          }
+          // Mantém o valor salvo mesmo perto do fim — é a única fonte de
+          // verdade pras ampulhetas do hub quando o registro de "leitura
+          // completa" no banco falha ou demora (ex.: rede instável no
+          // celular). O banner de retomada já ignora valores >=0.95 por
+          // conta própria, então isso não afeta aquela lógica.
+          window.localStorage.setItem(
+            CHAVE_PROGRESSO(poema.slug),
+            String(clamped),
+          );
         } catch {
           // Preferência de retomada não será salva.
         }
@@ -237,7 +236,9 @@ export default function PoemaExperience({ poema }: { poema: Poema }) {
       </div>
 
       <button
-        onClick={() => router.push("/hub")}
+        onClick={() => {
+          window.location.href = "/hub";
+        }}
         className="fixed left-6 top-6 z-20 text-[10px] uppercase tracking-[3px] text-[#6a5898] transition-colors hover:text-[#c8a030]"
       >
         ← Diário Lúdico

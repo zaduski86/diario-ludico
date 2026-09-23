@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { poemas } from "@/lib/poemas";
 import { getLeitorLocal, listarPoemasLidos } from "@/lib/supabase";
 
@@ -18,15 +18,29 @@ function lerProgressoLocal(slug: string): number {
 export default function AmpulhetasProgresso() {
   const [percentuais, setPercentuais] = useState<number[] | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const leitor = getLeitorLocal();
-      const lidosSet = new Set(leitor ? await listarPoemasLidos(leitor.id) : []);
-      setPercentuais(
-        poemas.map((p) => (lidosSet.has(p.slug) ? 100 : lerProgressoLocal(p.slug))),
-      );
-    })();
+  const recarregar = useCallback(async () => {
+    const leitor = getLeitorLocal();
+    const lidosSet = new Set(leitor ? await listarPoemasLidos(leitor.id) : []);
+    setPercentuais(
+      poemas.map((p) => (lidosSet.has(p.slug) ? 100 : lerProgressoLocal(p.slug))),
+    );
   }, []);
+
+  useEffect(() => {
+    recarregar();
+    // O hub pode voltar a ficar visível sem remontar (cache de navegação do
+    // Next.js, ou o navegador restaurando a aba) — sem isso, as ampulhetas
+    // ficam presas no valor de quando a página carregou pela primeira vez.
+    function aoVoltarAFicarVisivel() {
+      if (document.visibilityState === "visible") recarregar();
+    }
+    window.addEventListener("focus", recarregar);
+    document.addEventListener("visibilitychange", aoVoltarAFicarVisivel);
+    return () => {
+      window.removeEventListener("focus", recarregar);
+      document.removeEventListener("visibilitychange", aoVoltarAFicarVisivel);
+    };
+  }, [recarregar]);
 
   if (!percentuais) return null;
 
