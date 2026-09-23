@@ -3,26 +3,41 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { listarSussurros, type Sussurro } from "@/lib/supabase";
+import { proximaDica } from "@/lib/dicasGenio";
 
-function escolherTres(lista: Sussurro[]): (Sussurro | null)[] {
-  if (lista.length === 0) return [null, null, null];
+type Bau = { tipo: "sussurro"; dado: Sussurro } | { tipo: "dica" };
+type Revelado =
+  | { tipo: "sussurro"; dado: Sussurro }
+  | { tipo: "dica"; texto: string };
+
+function montarBaus(lista: Sussurro[]): Bau[] {
   const embaralhado = [...lista].sort(() => Math.random() - 0.5);
-  return [0, 1, 2].map((i) => embaralhado[i % embaralhado.length]);
+  return [0, 1, 2].map((i) =>
+    i < embaralhado.length
+      ? { tipo: "sussurro" as const, dado: embaralhado[i] }
+      : { tipo: "dica" as const },
+  );
 }
 
 export default function BausModal({ onClose }: { onClose: () => void }) {
   const [carregando, setCarregando] = useState(true);
-  const [baus, setBaus] = useState<(Sussurro | null)[]>([null, null, null]);
-  const [aberto, setAberto] = useState<number | null>(null);
+  const [baus, setBaus] = useState<Bau[]>([]);
+  const [revelado, setRevelado] = useState<Revelado | null>(null);
 
   useEffect(() => {
     listarSussurros().then((lista) => {
-      setBaus(escolherTres(lista));
+      setBaus(montarBaus(lista));
       setCarregando(false);
     });
   }, []);
 
-  const sussurroAberto = aberto !== null ? baus[aberto] : null;
+  function abrir(b: Bau) {
+    if (b.tipo === "sussurro") {
+      setRevelado({ tipo: "sussurro", dado: b.dado });
+    } else {
+      setRevelado({ tipo: "dica", texto: proximaDica() });
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -53,12 +68,12 @@ export default function BausModal({ onClose }: { onClose: () => void }) {
             <p className="text-[13px] italic text-[#8a7fb0]">
               os baús aparecem…
             </p>
-          ) : sussurroAberto === null && aberto === null ? (
+          ) : !revelado ? (
             <div className="flex items-center justify-center gap-6">
-              {baus.map((_, i) => (
+              {baus.map((b, i) => (
                 <motion.button
                   key={i}
-                  onClick={() => setAberto(i)}
+                  onClick={() => abrir(b)}
                   whileHover={{ scale: 1.12, y: -4 }}
                   whileTap={{ scale: 0.95 }}
                   className="flex h-20 w-20 items-center justify-center rounded-lg border border-[rgba(200,160,48,0.35)] bg-[rgba(200,160,48,0.06)] text-[34px]"
@@ -74,19 +89,24 @@ export default function BausModal({ onClose }: { onClose: () => void }) {
               transition={{ duration: 0.6 }}
               className="border-l border-[rgba(200,160,48,0.35)] pl-4 text-left"
             >
-              {sussurroAberto ? (
+              {revelado.tipo === "sussurro" ? (
                 <>
                   <p className="text-[16px] italic leading-relaxed text-[#f0ecff]">
-                    &ldquo;{sussurroAberto.mensagem}&rdquo;
+                    &ldquo;{revelado.dado.mensagem}&rdquo;
                   </p>
                   <footer className="mt-2 text-[10px] uppercase tracking-[2px] text-[#c8a030]">
-                    — {sussurroAberto.nome}
+                    — {revelado.dado.nome}
                   </footer>
                 </>
               ) : (
-                <p className="text-[13px] italic text-[#4a3f70]">
-                  o baú está vazio — ninguém deixou sussurros ainda.
-                </p>
+                <>
+                  <p className="text-[16px] italic leading-relaxed text-[#f0ecff]">
+                    &ldquo;{revelado.texto}&rdquo;
+                  </p>
+                  <footer className="mt-2 text-[10px] uppercase tracking-[2px] text-[#6a5898]">
+                    — o gênio
+                  </footer>
+                </>
               )}
             </motion.blockquote>
           )}
