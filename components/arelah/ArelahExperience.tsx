@@ -29,7 +29,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           fill
           priority
           sizes="100vw"
-          className="object-cover brightness-[0.5] saturate-[0.85]"
+          className="object-cover blur-[6px] brightness-[0.3] saturate-[0.85]"
         />
         <div
           className="absolute inset-0"
@@ -61,7 +61,23 @@ export default function ArelahExperience({ numero }: { numero: number }) {
       </button>
 
       <main className="relative z-[5] mx-auto max-w-[720px] px-6">
-        <div className="h-[22vh]" />
+        <div className="h-[18vh]" />
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="mx-auto mb-16 w-fit max-w-[min(100vw-48px,960px)] border border-[rgba(200,160,48,0.35)] shadow-[0_0_60px_rgba(0,0,0,0.6)]"
+        >
+          <Image
+            src={capitulo.imagem ?? IMAGEM_CAPA}
+            alt={capitulo.subtitulo}
+            width={1376}
+            height={768}
+            priority
+            sizes="(max-width: 1008px) 100vw, 960px"
+            className="block h-auto max-h-[78vh] w-auto max-w-full object-contain"
+          />
+        </motion.div>
         {capitulo.paragrafos.map((p, i) => (
           <motion.p
             key={i}
