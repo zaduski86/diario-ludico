@@ -1,53 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import {
-  capitulos,
-  capitulosLiberados,
-  getCapitulo,
-  IMAGEM_CAPA,
-} from "@/lib/arelah";
-import { getArelahProgresso, getLeitorLocal } from "@/lib/supabase";
+import { capitulos, getCapitulo, IMAGEM_CAPA } from "@/lib/arelah";
 import SceneCanvas from "@/components/poema/SceneCanvas";
 
 export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();
-  const [carregando, setCarregando] = useState(true);
-  const [liberado, setLiberado] = useState(false);
-  const [liberados, setLiberados] = useState(0);
-
-  useEffect(() => {
-    (async () => {
-      const leitor = getLeitorLocal();
-      if (!leitor) {
-        router.replace("/hub");
-        return;
-      }
-      const progresso = await getArelahProgresso(leitor.id);
-      if (!progresso.livroDestrancadoEm) {
-        router.replace("/hub");
-        return;
-      }
-      const qtdLiberados = capitulosLiberados(progresso.livroDestrancadoEm);
-      setLiberados(qtdLiberados);
-      setLiberado(numero <= qtdLiberados && numero <= capitulos.length);
-      setCarregando(false);
-    })();
-  }, [numero, router]);
-
-  if (carregando) return null;
-
-  if (!liberado) return <CapituloTrancado />;
 
   const capitulo = getCapitulo(numero);
-  if (!capitulo) return <CapituloTrancado />;
+  if (!capitulo) return <CapituloAindaNaoEscrito />;
 
-  // O próximo capítulo só está de fato disponível se ele existir E já tiver
-  // sido liberado pra esse leitor hoje — não basta ter sido escrito.
-  const proximoDisponivelAgora = numero < liberados && numero < capitulos.length;
+  const temProximo = numero < capitulos.length;
 
   return (
     <motion.div
@@ -126,10 +91,13 @@ export default function ArelahExperience({ numero }: { numero: number }) {
         </motion.div>
 
         <div className="flex flex-col items-center gap-6 py-24 text-center">
-          {proximoDisponivelAgora ? (
-            <p className="text-[13px] uppercase tracking-[3px] text-[#c8a030]">
-              fim do capítulo — o próximo já está liberado
-            </p>
+          {temProximo ? (
+            <button
+              onClick={() => router.push(`/arelah/${numero + 1}`)}
+              className="border border-[rgba(200,160,48,0.6)] px-8 py-3 text-[12px] uppercase tracking-[3px] text-[#f0c84a] transition-colors hover:bg-[rgba(200,160,48,0.1)]"
+            >
+              próximo capítulo →
+            </button>
           ) : (
             <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">
               mem...ória carr...egando — vol...te am...anhã
@@ -151,7 +119,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
   );
 }
 
-function CapituloTrancado() {
+function CapituloAindaNaoEscrito() {
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_50%_30%,#1a1035_0%,#06040f_65%)] px-6 text-center">
       <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">

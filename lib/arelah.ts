@@ -181,14 +181,3 @@ export const capitulos: Capitulo[] = [
 export function getCapitulo(numero: number): Capitulo | undefined {
   return capitulos.find((c) => c.numero === numero);
 }
-
-/**
- * Quantos capítulos já deveriam estar liberados hoje pra um leitor que
- * destrancou o livro em `livroDestrancadoEm` — 1 por dia, a partir do dia
- * do desbloqueio, limitado ao que já foi escrito.
- */
-export function capitulosLiberados(livroDestrancadoEm: string): number {
-  const inicio = new Date(livroDestrancadoEm).getTime();
-  const diasPassados = Math.floor((Date.now() - inicio) / (24 * 60 * 60 * 1000));
-  return Math.min(capitulos.length, diasPassados + 1);
-}

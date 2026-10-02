@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 import { poemas } from "@/lib/poemas";
 import HubCard from "./HubCard";
 import Starfield from "./Starfield";
-import ArelahHub from "./arelah/ArelahHub";
-import AmpulhetasProgresso from "./AmpulhetasProgresso";
+import LivroArelah from "./arelah/LivroArelah";
 
 export default function Hub() {
   const router = useRouter();
@@ -50,10 +49,8 @@ export default function Hub() {
         ))}
       </div>
 
-      <AmpulhetasProgresso />
-
       <div className="relative z-10 w-full">
-        <ArelahHub />
+        <LivroArelah onAbrir={() => router.push("/arelah/1")} />
       </div>
     </motion.div>
   );
