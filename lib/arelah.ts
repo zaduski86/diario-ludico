@@ -18,7 +18,7 @@ export const capitulos: Capitulo[] = [
   {
     numero: 1,
     titulo: "Arelah — Origens",
-    subtitulo: "Capítulo I — O dia que nasceu o Infinito",
+    subtitulo: "O dia que nasceu o Infinito",
     imagem: "/assets/images/arelah-cap1.webp",
     cena: 2,
     paragrafos: [
@@ -55,7 +55,7 @@ export const capitulos: Capitulo[] = [
   {
     numero: 2,
     titulo: "Arelah — Origens",
-    subtitulo: "Capítulo II — O Fim do Começo",
+    subtitulo: "O Fim do Começo",
     imagem: "/assets/images/arelah-cap2.webp",
     cena: 0,
     paragrafos: [
@@ -129,7 +129,8 @@ export const capitulos: Capitulo[] = [
   {
     numero: 3,
     titulo: "Arelah — Origens",
-    subtitulo: "Capítulo III — Os Três Que Ficaram",
+    subtitulo: "Os Três Que Ficaram",
+    imagem: "/assets/images/arelah-cap3.webp",
     cena: 1,
     paragrafos: [
       "O tempo levou um instante para lembrar como se mover.",
