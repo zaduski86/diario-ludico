@@ -56,7 +56,7 @@ export const capitulos: Capitulo[] = [
     numero: 2,
     titulo: "Arelah — Origens",
     subtitulo: "O Fim do Começo",
-    imagem: "/assets/images/arelah-cap2.webp",
+    imagem: "/assets/images/arelah-cap2-v2.webp",
     cena: 0,
     paragrafos: [
       "Barnabé entrou sem ser convidado — como sempre fazia.",
