@@ -2625,6 +2625,7 @@ export const capitulos: Capitulo[] = [
     numero: 19,
     titulo: "Arelah — Origens",
     subtitulo: "O Peso",
+    imagem: "/assets/images/arelah-cap19.webp",
     cena: 2,
     paragrafos: [
       "— Mire — disse Barnabé.",
