@@ -3,8 +3,14 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Pinyon_Script } from "next/font/google";
 import { capitulos, getCapitulo, IMAGEM_CAPA } from "@/lib/arelah";
 import SceneCanvas from "@/components/poema/SceneCanvas";
+
+const caligrafia = Pinyon_Script({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();
@@ -78,18 +84,25 @@ export default function ArelahExperience({ numero }: { numero: number }) {
             className="block h-auto max-h-[78vh] w-auto max-w-full object-contain"
           />
         </motion.div>
-        {capitulo.paragrafos.map((p, i) => (
-          <motion.p
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.8 }}
-            className="mb-9 text-[clamp(23px,3.1vw,30px)] italic leading-[1.9] text-[#f0ecff]"
-          >
-            {p}
-          </motion.p>
-        ))}
+        {capitulo.paragrafos.map((p, i) => {
+          const verso = p.startsWith("> ");
+          return (
+            <motion.p
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.8 }}
+              className={
+                verso
+                  ? "mx-auto mb-9 max-w-[560px] border-l border-[rgba(200,160,48,0.5)] pl-5 text-[clamp(20px,2.6vw,25px)] italic leading-[1.8] text-[#f0c84a]"
+                  : "mb-9 text-[clamp(23px,3.1vw,30px)] italic leading-[1.9] text-[#f0ecff]"
+              }
+            >
+              {verso ? p.slice(2) : p}
+            </motion.p>
+          );
+        })}
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -106,6 +119,25 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           </p>
         </motion.div>
 
+        {capitulo.dedicatoria && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-15%" }}
+            transition={{ duration: 2 }}
+            className="mx-auto mt-40 max-w-[560px] text-center"
+          >
+            <p
+              className={`${caligrafia.className} text-[clamp(30px,5vw,44px)] italic leading-[1.5] text-[#f0ecff]`}
+            >
+              {capitulo.dedicatoria}
+            </p>
+            <p className="mt-16 text-[11px] uppercase tracking-[8px] text-[#6a5898]">
+              fim
+            </p>
+          </motion.div>
+        )}
+
         <div className="flex flex-col items-center gap-6 py-24 text-center">
           {temProximo ? (
             <button
@@ -114,7 +146,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
             >
               próximo capítulo →
             </button>
-          ) : (
+          ) : capitulo.dedicatoria ? null : (
             <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">
               mem...ória carr...egando — vol...te am...anhã
               <br />
