@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Pinyon_Script } from "next/font/google";
-import { capitulos, getCapitulo, IMAGEM_CAPA } from "@/lib/arelah";
+import { capitulos, getCapitulo, IMAGEM_CAPA, romano } from "@/lib/arelah";
 import SceneCanvas from "@/components/poema/SceneCanvas";
 import Comentarios from "@/components/poema/Comentarios";
 
@@ -23,26 +23,6 @@ const caligrafia = Pinyon_Script({
   subsets: ["latin"],
   weight: "400",
 });
-
-const ROMANOS: [number, string][] = [
-  [10, "X"],
-  [9, "IX"],
-  [5, "V"],
-  [4, "IV"],
-  [1, "I"],
-];
-
-function romano(n: number): string {
-  let resto = n;
-  let saida = "";
-  for (const [valor, simbolo] of ROMANOS) {
-    while (resto >= valor) {
-      saida += simbolo;
-      resto -= valor;
-    }
-  }
-  return saida;
-}
 
 export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();

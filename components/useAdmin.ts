@@ -35,6 +35,14 @@ export async function loginAdmin(senha: string): Promise<boolean> {
   }
 }
 
+export function logoutAdmin(): void {
+  try {
+    window.sessionStorage.removeItem(CHAVE_SENHA);
+  } catch {
+    // sessionStorage indisponível: nada a limpar.
+  }
+}
+
 export async function apagarComentarioAdmin(id: string): Promise<boolean> {
   const senha = getSenhaSessao();
   if (!senha) return false;

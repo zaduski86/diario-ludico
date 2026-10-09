@@ -161,6 +161,21 @@ export async function listarComentarios(
   return data as Comentario[];
 }
 
+/** Todos os comentários (livro e poemas), do mais novo para o mais antigo. Usado pela página de administração. */
+export async function listarTodosComentarios(
+  limite = 1000,
+): Promise<Comentario[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("comentarios")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limite);
+  if (error) return [];
+  return data as Comentario[];
+}
+
 export async function enviarComentario(
   poemaSlug: string,
   nome: string,

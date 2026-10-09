@@ -3745,6 +3745,27 @@ export const prefacio: Capitulo = {
   fragmentoProfecia: "",
 };
 
+const ROMANOS: [number, string][] = [
+  [10, "X"],
+  [9, "IX"],
+  [5, "V"],
+  [4, "IV"],
+  [1, "I"],
+];
+
+/** Número em algarismos romanos (1 a 39), usado na numeração dos capítulos. */
+export function romano(n: number): string {
+  let resto = n;
+  let saida = "";
+  for (const [valor, simbolo] of ROMANOS) {
+    while (resto >= valor) {
+      saida += simbolo;
+      resto -= valor;
+    }
+  }
+  return saida;
+}
+
 export function getCapitulo(numero: number): Capitulo | undefined {
   if (numero === 0) return prefacio;
   return capitulos.find((c) => c.numero === numero);
