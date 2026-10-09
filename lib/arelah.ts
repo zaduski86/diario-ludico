@@ -3712,6 +3712,7 @@ export const prefacio: Capitulo = {
   numero: 0,
   titulo: "O Livro de Arelah",
   subtitulo: "Prefácio",
+  imagem: "/assets/images/arelah-prefacio.webp",
   cena: 1,
   paragrafos: [
     "Bem-vindo. Ou, como se diz entre quem já leu: sinto muito.",
