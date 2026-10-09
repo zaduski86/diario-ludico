@@ -66,7 +66,10 @@ export default function ArelahExperience({ numero }: { numero: number }) {
         />
       </div>
 
-      <SceneCanvas cena={capitulo.cena} progress={0.4} />
+      {/* Marca d'água: as linhas douradas ficam sutis para não atrapalhar a leitura. */}
+      <div className="relative z-[3] opacity-[0.2]">
+        <SceneCanvas cena={capitulo.cena} progress={0.4} />
+      </div>
 
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-10 bg-gradient-to-b from-[rgba(6,4,15,0.9)] via-[rgba(6,4,15,0.6)] to-transparent px-5 pb-6 pt-[60px] text-center">
         <p className="mb-1 text-[10px] uppercase tracking-[4px] text-[#c8a030]">
