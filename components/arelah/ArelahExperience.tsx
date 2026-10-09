@@ -12,6 +12,26 @@ const caligrafia = Pinyon_Script({
   weight: "400",
 });
 
+const ROMANOS: [number, string][] = [
+  [10, "X"],
+  [9, "IX"],
+  [5, "V"],
+  [4, "IV"],
+  [1, "I"],
+];
+
+function romano(n: number): string {
+  let resto = n;
+  let saida = "";
+  for (const [valor, simbolo] of ROMANOS) {
+    while (resto >= valor) {
+      saida += simbolo;
+      resto -= valor;
+    }
+  }
+  return saida;
+}
+
 export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();
 
@@ -52,6 +72,11 @@ export default function ArelahExperience({ numero }: { numero: number }) {
         <p className="mb-1 text-[10px] uppercase tracking-[4px] text-[#c8a030]">
           {capitulo.titulo}
         </p>
+        {numero > 0 && (
+          <p className="mb-1 text-[9px] uppercase tracking-[5px] text-[#6a5898]">
+            capítulo {romano(numero)} de {romano(capitulos.length)}
+          </p>
+        )}
         <h1 className="text-[clamp(18px,3.8vw,30px)] italic tracking-[1px] text-[#f0ecff]">
           {capitulo.subtitulo}
         </h1>
@@ -104,20 +129,22 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           );
         })}
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10%" }}
-          transition={{ duration: 1 }}
-          className="mx-auto mt-4 max-w-[520px] border-y border-[rgba(200,160,48,0.3)] py-8 text-center"
-        >
-          <p className="mb-3 text-[9px] uppercase tracking-[5px] text-[#6a5898]">
-            fragmento da profecia
-          </p>
-          <p className="text-[16px] italic leading-relaxed text-[#c8a030]">
-            &ldquo;{capitulo.fragmentoProfecia}&rdquo;
-          </p>
-        </motion.div>
+        {capitulo.fragmentoProfecia && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 1 }}
+            className="mx-auto mt-4 max-w-[520px] border-y border-[rgba(200,160,48,0.3)] py-8 text-center"
+          >
+            <p className="mb-3 text-[9px] uppercase tracking-[5px] text-[#6a5898]">
+              fragmento da profecia
+            </p>
+            <p className="text-[16px] italic leading-relaxed text-[#c8a030]">
+              &ldquo;{capitulo.fragmentoProfecia}&rdquo;
+            </p>
+          </motion.div>
+        )}
 
         {capitulo.dedicatoria && (
           <motion.div
@@ -144,7 +171,7 @@ export default function ArelahExperience({ numero }: { numero: number }) {
               onClick={() => router.push(`/arelah/${numero + 1}`)}
               className="border border-[rgba(200,160,48,0.6)] px-8 py-3 text-[12px] uppercase tracking-[3px] text-[#f0c84a] transition-colors hover:bg-[rgba(200,160,48,0.1)]"
             >
-              próximo capítulo →
+              {numero === 0 ? "começar a ler →" : "próximo capítulo →"}
             </button>
           ) : capitulo.dedicatoria ? null : (
             <p className="glitch-texto max-w-[460px] text-[19px] italic leading-relaxed text-[#c8c0e0]">

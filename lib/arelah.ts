@@ -3707,6 +3707,42 @@ export const capitulos: Capitulo[] = [
   },
 ];
 
+/** Prefácio do livro: vive em /arelah/0, antes do Capítulo I. Sem fragmento de profecia. */
+export const prefacio: Capitulo = {
+  numero: 0,
+  titulo: "O Livro de Arelah",
+  subtitulo: "Prefácio",
+  cena: 1,
+  paragrafos: [
+    "Antes de mais nada: obrigado por abrir este livro. Ou desculpe. Ainda não sei qual dos dois cabe melhor, e só você vai descobrir depois.",
+    "Prefácios existem para duas coisas: explicar o que o livro é e pedir desculpas pelo que ele não é. Eu vou fazer só a segunda. A primeira estragaria a graça.",
+    "Então, o que este livro não é.",
+    "Não é um livro sobre uma heroína que vence o mal com uma espada. Há espadas. Há mal. Mas a ordem das coisas anda meio torta, e o mal, de vez em quando, tem razão.",
+    "Não é um livro de dragões. (Eu juraria que havia dragões. Se encontrar um, avise.)",
+    "Não é um livro para ler com pressa. Aqui a pressa é considerada falta de educação, e um velho de muleta e cachimbo apagado pode aparecer, sem bater, para lhe dar bronca.",
+    "O que ele contém, em ordem de aparição aproximada: uma menina que tem um mundo só dela. Um inventor com cinco invenções que falham para cada uma que funciona. Uma mulher que cuida de plantas que ninguém mais tocaria e que ninguém deveria contrariar. O tal velho de muleta. Uma Chaleira, que tem mais opinião do que pernas. E peludos. Muitos peludos.",
+    "Contém também uma planta que pega fogo todo dia às 16:20 e se apaga sozinha, deixando um cheiro que ninguém sabe descrever. Não pergunte. Ela também não sabe.",
+    "Instruções de uso.",
+    "> Um. O livro tem vinte e dois capítulos. Nem um a mais, nem um a menos. Eu sei que parece uma promessa fácil de fazer. Não é. Houve um dia em que eu quis chegar ao vinte e três. O vinte e dois não deixou.",
+    "> Dois. Ao fim de cada capítulo aparece um fragmento de profecia. Não leia como profecia. Leia como bilhete. De quem, para quem? Releia todos depois do vinte e dois e me diga se não mudaram de cor.",
+    "> Três. Se em algum momento alguém lhe disser o nome de alguém ao contrário, não repita em voz alta. Isso não é superstição. É literatura.",
+    "> Quatro. Enquanto ler o primeiro capítulo, respire quatro vezes para entrar e seis para soltar. Não pergunte por quê. Faz bem de qualquer jeito. Se quiser ir além, descubra quantas vezes por minuto isso dá. Depois me diga quem respira nessa mesma conta, mais adiante, e de quem é o peito.",
+    "Agora os enigmas. Levo-os no bolso desde o início, e acho justo dividir.",
+    "> Primeiro enigma. Uma data: 22 de setembro. Dois mais dois, quatro. Quatro mais quatro, oito. Deite o oito. O que ele diz?",
+    "> Segundo enigma. Existe uma palavra de duas sílabas que significa olhe. Uma menina a sabe desde antes de saber falar. Quando a encontrar, não olhe logo. Conte quantas vezes ela é dita, e para quem.",
+    "> Terceiro enigma. A moça se chama Arelah. Numa língua que quase ninguém mais fala, isso é o nome de uma fruta: a que ainda não pode ser colhida. E também de outra coisa, que só faz sentido no fim. Descubra as duas. Depois leia o nome dela do outro lado do espelho, e não o diga.",
+    "> Quarto enigma. Em algum momento você vai ver uma mulher com uma pinta em forma de meia-lua atrás da orelha esquerda. Você vai saber de quem ela é. Mas pergunte a si mesmo por que ela parece tão familiar.",
+    "> Quinto enigma. Este livro é dedicado a alguém. A dedicatória não está na capa, nem aqui, de propósito. Dedicatórias no começo são promessas. As do fim são respostas. Vá até o final, leia, e me diga se a pessoa a quem ela é dedicada é só uma.",
+    "Por fim, um aviso de segurança: este livro pode causar a sensação de que a casa onde você mora tem mais camadas do que parecia. Não é culpa do livro. Já era assim.",
+    "Se bater uma saudade, uma vontade de rir, de chorar ou de abraçar alguém, está funcionando.",
+    "Boa leitura.",
+    "— quem conta, que também só soube como ia terminar no final.",
+    "P.S.: Magia do Caminho Estelar é o subtítulo. Não, ninguém sabe ainda o que é o caminho. Mas as estrelas, desconfio, sabem.",
+  ],
+  fragmentoProfecia: "",
+};
+
 export function getCapitulo(numero: number): Capitulo | undefined {
+  if (numero === 0) return prefacio;
   return capitulos.find((c) => c.numero === numero);
 }

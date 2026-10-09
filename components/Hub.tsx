@@ -50,7 +50,7 @@ export default function Hub() {
       </div>
 
       <div className="relative z-10 w-full">
-        <LivroArelah onAbrir={() => router.push("/arelah/1")} />
+        <LivroArelah onAbrir={() => router.push("/arelah/0")} />
       </div>
     </motion.div>
   );

@@ -10,5 +10,6 @@ export default async function ArelahPage({
   params: Promise<{ numero: string }>;
 }) {
   const { numero } = await params;
-  return <ArelahExperience numero={Number(numero) || 1} />;
+  const n = Number(numero);
+  return <ArelahExperience numero={Number.isFinite(n) ? n : 1} />;
 }
