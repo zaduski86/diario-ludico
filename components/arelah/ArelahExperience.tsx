@@ -6,6 +6,18 @@ import Image from "next/image";
 import { Pinyon_Script } from "next/font/google";
 import { capitulos, getCapitulo, IMAGEM_CAPA } from "@/lib/arelah";
 import SceneCanvas from "@/components/poema/SceneCanvas";
+import Comentarios from "@/components/poema/Comentarios";
+
+/** Texto que convida o leitor a comentar, ajustado ao ponto do livro. */
+function chamadaDoComentario(numero: number, total: number): string {
+  if (numero === 0) {
+    return "Respostas aos enigmas são bem-vindas. Palpites errados, com muita convicção, são ainda melhores. Ninguém aqui vai dizer quem acertou.";
+  }
+  if (numero === total) {
+    return "O livro acabou. As suas teorias, não. Diga o que você viu, o que sentiu e, se achar que decifrou algum dos enigmas do prefácio, escreva aqui. Eu leio tudo, e finjo que já sabia.";
+  }
+  return "Teorias, suspeitas, palpites e reclamações elegantes alimentam esta história. O que você acha que está acontecendo de verdade? Deixe aqui, e vamos ver se o livro tem coragem de contrariar você.";
+}
 
 const caligrafia = Pinyon_Script({
   subsets: ["latin"],
@@ -168,7 +180,20 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           </motion.div>
         )}
 
-        <div className="flex flex-col items-center gap-6 py-24 text-center">
+        <div className="mt-24">
+          <Comentarios
+            poemaSlug={`arelah-${numero}`}
+            titulo="o que você achou?"
+            chamada={chamadaDoComentario(numero, capitulos.length)}
+            placeholder={
+              numero === 0
+                ? "sua resposta, ou seu palpite, para os enigmas…"
+                : "o que esse capítulo despertou em você?"
+            }
+          />
+        </div>
+
+        <div className="flex flex-col items-center gap-6 pb-24 text-center">
           {temProximo ? (
             <button
               onClick={() => router.push(`/arelah/${numero + 1}`)}

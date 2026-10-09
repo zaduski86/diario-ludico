@@ -22,7 +22,18 @@ function tempoRelativo(iso: string): string {
   return `há ${d}d`;
 }
 
-export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
+export default function Comentarios({
+  poemaSlug,
+  titulo = "comentários dos leitores",
+  chamada,
+  placeholder = "o que esse poema despertou em você?",
+}: {
+  poemaSlug: string;
+  titulo?: string;
+  /** Texto curto que convida o leitor a comentar, exibido abaixo do título. */
+  chamada?: string;
+  placeholder?: string;
+}) {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [nome, setNome] = useState("");
   const [mensagem, setMensagem] = useState("");
@@ -92,10 +103,15 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mb-6 text-center text-[11px] uppercase tracking-[4px] text-[#c8a030]"
+        className={`${chamada ? "mb-3" : "mb-6"} text-center text-[11px] uppercase tracking-[4px] text-[#c8a030]`}
       >
-        comentários dos leitores
+        {titulo}
       </motion.h3>
+      {chamada && (
+        <p className="mx-auto mb-6 max-w-[480px] text-center text-[15px] italic leading-relaxed text-[#c8c0e0]">
+          {chamada}
+        </p>
+      )}
 
       <div className="mb-8 flex flex-col gap-3 border border-[rgba(200,160,48,0.3)] bg-[rgba(13,8,32,0.7)] p-4">
         <input
@@ -108,7 +124,7 @@ export default function Comentarios({ poemaSlug }: { poemaSlug: string }) {
         <textarea
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
-          placeholder="o que esse poema despertou em você?"
+          placeholder={placeholder}
           maxLength={1000}
           rows={3}
           className="resize-none border-b border-[rgba(200,160,48,0.35)] bg-transparent px-1 py-1.5 text-sm text-[#f0ecff] placeholder:text-[#8a7fb0] focus:border-[#c8a030] focus:outline-none"
