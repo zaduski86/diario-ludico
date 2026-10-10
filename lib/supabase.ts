@@ -147,9 +147,27 @@ export type Comentario = {
   created_at: string;
 };
 
+/**
+ * Lê os comentários de uma página. Passa primeiro pelo servidor do próprio
+ * site (/api/comentarios); só recorre ao Supabase direto se essa rota falhar.
+ */
 export async function listarComentarios(
   poemaSlug: string,
 ): Promise<Comentario[]> {
+  try {
+    const res = await fetch(
+      `/api/comentarios?slug=${encodeURIComponent(poemaSlug)}`,
+      { cache: "no-store" },
+    );
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.ok && Array.isArray(json.comentarios)) {
+        return json.comentarios as Comentario[];
+      }
+    }
+  } catch {
+    // Rota indisponível: tenta o caminho direto abaixo.
+  }
   const supabase = getSupabase();
   if (!supabase) return [];
   const { data, error } = await supabase
@@ -176,11 +194,30 @@ export async function listarTodosComentarios(
   return data as Comentario[];
 }
 
+/**
+ * Envia um comentário pelo servidor do próprio site. Se a rota estiver fora
+ * do ar ou inacessível, tenta gravar direto no Supabase como plano B.
+ * Erros de validação e de limite (400/429) não são repetidos.
+ */
 export async function enviarComentario(
   poemaSlug: string,
   nome: string,
   mensagem: string,
-) {
+): Promise<{ error: string | null; limite?: boolean }> {
+  try {
+    const res = await fetch("/api/comentarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: poemaSlug, nome, mensagem }),
+    });
+    if (res.ok) return { error: null };
+    if (res.status === 429) {
+      return { error: "muitos comentários em pouco tempo", limite: true };
+    }
+    if (res.status === 400) return { error: "dados inválidos" };
+  } catch {
+    // Rota inacessível: cai no plano B.
+  }
   const supabase = getSupabase();
   if (!supabase) return { error: "Supabase não configurado" };
   const { error } = await supabase

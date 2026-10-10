@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import {
   enviarComentario,
   getLeitorLocal,
-  getSupabase,
   listarComentarios,
   type Comentario,
 } from "@/lib/supabase";
@@ -39,14 +38,11 @@ export default function Comentarios({
   const [mensagem, setMensagem] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [disponivel, setDisponivel] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [apagando, setApagando] = useState<string | null>(null);
   const [confirmando, setConfirmando] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!getSupabase()) return;
-    setDisponivel(true);
     setAdmin(isAdminSessao());
     const leitor = getLeitorLocal();
     if (leitor?.nome) setNome(leitor.nome);
@@ -71,14 +67,18 @@ export default function Comentarios({
     if (!nomeLimpo || !mensagemLimpa || enviando) return;
     setEnviando(true);
     setErro(null);
-    const { error } = await enviarComentario(
+    const { error, limite } = await enviarComentario(
       poemaSlug,
       nomeLimpo,
       mensagemLimpa,
     );
     setEnviando(false);
     if (error) {
-      setErro("Não foi possível enviar. Tenta de novo?");
+      setErro(
+        limite
+          ? "Calma! Muitos comentários seguidos. Espere um minutinho e tente de novo."
+          : "Não foi possível enviar. Tenta de novo?",
+      );
       return;
     }
     setComentarios((c) => [
@@ -93,8 +93,6 @@ export default function Comentarios({
     ]);
     setMensagem("");
   }
-
-  if (!disponivel) return null;
 
   return (
     <section className="relative z-[5] mx-auto w-[90%] max-w-[620px] pb-24">
