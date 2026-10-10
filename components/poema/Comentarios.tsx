@@ -6,6 +6,7 @@ import {
   enviarComentario,
   getLeitorLocal,
   listarComentarios,
+  novoId,
   type Comentario,
 } from "@/lib/supabase";
 import { apagarComentarioAdmin, isAdminSessao } from "@/components/useAdmin";
@@ -77,13 +78,13 @@ export default function Comentarios({
       setErro(
         limite
           ? "Calma! Muitos comentários seguidos. Espere um minutinho e tente de novo."
-          : "Não foi possível enviar. Tenta de novo?",
+          : `Não foi possível enviar. Tenta de novo? (${error})`,
       );
       return;
     }
     setComentarios((c) => [
       {
-        id: crypto.randomUUID(),
+        id: novoId(),
         poema_slug: poemaSlug,
         nome: nomeLimpo,
         mensagem: mensagemLimpa,

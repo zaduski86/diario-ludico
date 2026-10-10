@@ -54,7 +54,7 @@ export async function identificarLeitor(nome: string): Promise<Leitor> {
   if (!supabase) {
     const leitor = existente?.id
       ? { ...existente, nome }
-      : { id: crypto.randomUUID(), nome };
+      : { id: novoId(), nome };
     salvarLeitorLocal(leitor);
     return leitor;
   }
@@ -81,7 +81,7 @@ export async function identificarLeitor(nome: string): Promise<Leitor> {
   } catch {
     const leitor = existente?.id
       ? { ...existente, nome }
-      : { id: crypto.randomUUID(), nome };
+      : { id: novoId(), nome };
     salvarLeitorLocal(leitor);
     return leitor;
   }
@@ -204,6 +204,7 @@ export async function enviarComentario(
   nome: string,
   mensagem: string,
 ): Promise<{ error: string | null; limite?: boolean }> {
+  let motivoRota = "";
   try {
     const res = await fetch("/api/comentarios", {
       method: "POST",
@@ -214,15 +215,36 @@ export async function enviarComentario(
     if (res.status === 429) {
       return { error: "muitos comentários em pouco tempo", limite: true };
     }
-    if (res.status === 400) return { error: "dados inválidos" };
+    if (res.status === 400) return { error: "dados inválidos (400)" };
+    motivoRota = `site ${res.status}`;
   } catch {
-    // Rota inacessível: cai no plano B.
+    motivoRota = "site sem resposta";
   }
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase não configurado" };
-  const { error } = await supabase
-    .from("comentarios")
-    .insert({ poema_slug: poemaSlug, nome, mensagem });
-  return { error: error?.message ?? null };
+  if (!supabase) return { error: `${motivoRota}; banco não configurado` };
+  try {
+    const { error } = await supabase
+      .from("comentarios")
+      .insert({ poema_slug: poemaSlug, nome, mensagem });
+    if (!error) return { error: null };
+    return { error: `${motivoRota}; banco: ${error.message.slice(0, 60)}` };
+  } catch {
+    return { error: `${motivoRota}; banco sem resposta` };
+  }
+}
+
+/** UUID que não quebra em navegadores antigos (crypto.randomUUID chegou só em 2021-2022). */
+export function novoId(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+  } catch {
+    // Contexto sem crypto: usa o plano B abaixo.
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
 }
 
