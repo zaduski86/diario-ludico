@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 export default function ResumoLeitura({
   onContinuar,
   onComecarDoInicio,
+  topo = "top-[104px]",
 }: {
   onContinuar: () => void;
   onComecarDoInicio: () => void;
+  /** Classe de posição vertical; o livro usa uma mais baixa por causa do cabeçalho. */
+  topo?: string;
 }) {
   return (
     <motion.div
@@ -15,7 +18,7 @@ export default function ResumoLeitura({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5 }}
-      className="fixed left-1/2 top-[104px] z-[150] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full border border-[rgba(200,160,48,0.25)] bg-[rgba(13,8,32,0.92)] px-4 py-2 text-[11px] backdrop-blur-md"
+      className={`fixed left-1/2 ${topo} z-[150] flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full border border-[rgba(200,160,48,0.25)] bg-[rgba(13,8,32,0.92)] px-4 py-2 text-[11px] backdrop-blur-md`}
     >
       <span className="text-[#c8c0e0]">Continuar de onde parou?</span>
       <button

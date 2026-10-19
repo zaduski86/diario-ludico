@@ -1,36 +1,72 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { capitulos, romano } from "@/lib/arelah";
+import { getRetomada, type UltimaLeitura } from "@/lib/arelahProgresso";
 
 const IMAGEM_LIVRO = "/assets/images/arelah-livro.webp";
 
-export default function LivroArelah({ onAbrir }: { onAbrir: () => void }) {
+function rotuloRetomada(r: UltimaLeitura): string {
+  const capitulo = r.numero === 0 ? "prefácio" : `capítulo ${romano(r.numero)}`;
+  const pct = Math.round(r.progresso * 100);
+  return r.progresso > 0.05
+    ? `continuar de onde parou — ${capitulo} (${pct}%)`
+    : `continuar a leitura — ${capitulo}`;
+}
+
+export default function LivroArelah({
+  onAbrir,
+  onAbrirIndice,
+}: {
+  /** Recebe o capítulo onde o leitor deve entrar (0 = prefácio). */
+  onAbrir: (numero: number) => void;
+  onAbrirIndice: () => void;
+}) {
+  const [retomada, setRetomada] = useState<UltimaLeitura | null>(null);
+
+  useEffect(() => {
+    setRetomada(getRetomada(capitulos.length));
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7 }}
-      onClick={onAbrir}
-      className="group relative mx-auto mt-16 w-full max-w-[880px] cursor-pointer"
+      className="mx-auto mt-16 w-full max-w-[880px]"
     >
-      <div className="relative aspect-[16/9] w-full overflow-hidden border border-[rgba(200,160,48,0.35)] transition-colors group-hover:border-[rgba(200,160,48,0.6)]">
-        <Image
-          src={IMAGEM_LIVRO}
-          alt="O Livro de Arelah"
-          fill
-          sizes="880px"
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(6,4,15,0.92)] via-[rgba(6,4,15,0.55)] to-transparent px-6 pb-5 pt-16 text-center">
-          <h3 className="text-[15px] uppercase tracking-[5px] text-[#f0c84a]">
-            O Livro de Arelah
-          </h3>
-          <p className="mt-2 text-[15px] italic text-[#f0ecff]">
-            clique pra começar a ler.
-          </p>
+      <div
+        onClick={() => onAbrir(retomada?.numero ?? 0)}
+        className="group relative cursor-pointer"
+      >
+        <div className="relative aspect-[16/9] w-full overflow-hidden border border-[rgba(200,160,48,0.35)] transition-colors group-hover:border-[rgba(200,160,48,0.6)]">
+          <Image
+            src={IMAGEM_LIVRO}
+            alt="O Livro de Arelah"
+            fill
+            sizes="880px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(6,4,15,0.92)] via-[rgba(6,4,15,0.55)] to-transparent px-6 pb-5 pt-16 text-center">
+            <h3 className="text-[15px] uppercase tracking-[5px] text-[#f0c84a]">
+              O Livro de Arelah
+            </h3>
+            <p className="mt-2 text-[15px] italic text-[#f0ecff]">
+              {retomada ? rotuloRetomada(retomada) : "clique pra começar a ler."}
+            </p>
+          </div>
         </div>
+      </div>
+      <div className="mt-4 text-center">
+        <button
+          onClick={onAbrirIndice}
+          className="text-[10px] uppercase tracking-[4px] text-[#6a5898] transition-colors hover:text-[#c8a030]"
+        >
+          ☰ índice dos capítulos
+        </button>
       </div>
     </motion.div>
   );

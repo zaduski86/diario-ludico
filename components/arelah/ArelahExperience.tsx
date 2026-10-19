@@ -1,12 +1,21 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { Pinyon_Script } from "next/font/google";
 import { capitulos, getCapitulo, IMAGEM_CAPA, romano } from "@/lib/arelah";
+import {
+  getProgressoCapitulo,
+  PROGRESSO_MAXIMO,
+  PROGRESSO_MINIMO,
+  reiniciarProgressoCapitulo,
+  salvarProgressoCapitulo,
+} from "@/lib/arelahProgresso";
 import SceneCanvas from "@/components/poema/SceneCanvas";
 import Comentarios from "@/components/poema/Comentarios";
+import ResumoLeitura from "@/components/poema/ResumoLeitura";
 
 /** Texto que convida o leitor a comentar, ajustado ao ponto do livro. */
 function chamadaDoComentario(numero: number, total: number): string {
@@ -26,6 +35,78 @@ const caligrafia = Pinyon_Script({
 
 export default function ArelahExperience({ numero }: { numero: number }) {
   const router = useRouter();
+  const [mostrarResumo, setMostrarResumo] = useState(false);
+  const resumoPendente = useRef(false);
+  const tickAgendado = useRef(false);
+  const ultimoSalvo = useRef(0);
+  const fimDoTexto = useRef<HTMLDivElement>(null);
+
+  // Oferece retomar a leitura de onde parou, se houver progresso salvo.
+  useEffect(() => {
+    const salvo = getProgressoCapitulo(numero);
+    const pendente = salvo > PROGRESSO_MINIMO && salvo < PROGRESSO_MAXIMO;
+    resumoPendente.current = pendente;
+    setMostrarResumo(pendente);
+  }, [numero]);
+
+  // Guarda a posição da rolagem enquanto o leitor lê.
+  useEffect(() => {
+    let primeiraMedicao = true;
+
+    function medir() {
+      tickAgendado.current = false;
+      // A primeira medição acontece no carregamento, antes de o leitor decidir
+      // se quer retomar; e enquanto o convite está na tela, a posição salva
+      // não pode ser sobrescrita por uma rolagem qualquer.
+      if (primeiraMedicao) {
+        primeiraMedicao = false;
+        return;
+      }
+      if (resumoPendente.current) return;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const p = total > 0 ? window.scrollY / total : 0;
+      const agora = Date.now();
+      if (agora - ultimoSalvo.current > 400) {
+        ultimoSalvo.current = agora;
+        salvarProgressoCapitulo(numero, p);
+      }
+    }
+    function aoRolar() {
+      if (tickAgendado.current) return;
+      tickAgendado.current = true;
+      requestAnimationFrame(medir);
+    }
+    medir();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => window.removeEventListener("scroll", aoRolar);
+  }, [numero]);
+
+  // Marca o capítulo como lido quando o texto termina (antes dos comentários).
+  useEffect(() => {
+    const alvo = fimDoTexto.current;
+    if (!alvo) return;
+    const observer = new IntersectionObserver((entradas) => {
+      if (entradas.some((e) => e.isIntersecting) && !resumoPendente.current) {
+        salvarProgressoCapitulo(numero, 1);
+      }
+    });
+    observer.observe(alvo);
+    return () => observer.disconnect();
+  }, [numero]);
+
+  function continuarLeitura() {
+    resumoPendente.current = false;
+    setMostrarResumo(false);
+    const salvo = getProgressoCapitulo(numero);
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    window.scrollTo({ top: salvo * total, behavior: "smooth" });
+  }
+
+  function comecarDoInicio() {
+    resumoPendente.current = false;
+    setMostrarResumo(false);
+    reiniciarProgressoCapitulo(numero);
+  }
 
   const capitulo = getCapitulo(numero);
   if (!capitulo) return <CapituloAindaNaoEscrito />;
@@ -85,6 +166,23 @@ export default function ArelahExperience({ numero }: { numero: number }) {
       >
         ← Diário Lúdico
       </button>
+
+      <button
+        onClick={() => router.push("/arelah")}
+        className="fixed right-6 top-6 z-20 text-[10px] uppercase tracking-[3px] text-[#6a5898] transition-colors hover:text-[#c8a030]"
+      >
+        ☰ Índice
+      </button>
+
+      <AnimatePresence>
+        {mostrarResumo && (
+          <ResumoLeitura
+            onContinuar={continuarLeitura}
+            onComecarDoInicio={comecarDoInicio}
+            topo="top-[150px]"
+          />
+        )}
+      </AnimatePresence>
 
       <main className="relative z-[5] mx-auto max-w-[720px] px-6">
         <div className="h-[18vh]" />
@@ -160,6 +258,9 @@ export default function ArelahExperience({ numero }: { numero: number }) {
           </motion.div>
         )}
 
+        {/* Marca o fim do texto: ao chegar aqui, o capítulo conta como lido. */}
+        <div ref={fimDoTexto} aria-hidden className="h-px" />
+
         <div className="mt-24">
           <Comentarios
             poemaSlug={`arelah-${numero}`}
@@ -188,6 +289,12 @@ export default function ArelahExperience({ numero }: { numero: number }) {
               a magia de hoje... já foi.
             </p>
           )}
+          <button
+            onClick={() => router.push("/arelah")}
+            className="border border-[rgba(200,160,48,0.4)] px-7 py-2.5 text-[10px] uppercase tracking-[3px] text-[#c8a030] transition-colors hover:bg-[rgba(200,160,48,0.08)] hover:text-[#f0c84a]"
+          >
+            ☰ índice dos capítulos
+          </button>
           <button
             onClick={() => {
               window.location.href = "/hub";
